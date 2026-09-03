@@ -298,6 +298,11 @@
   animation-delay: calc(560ms + var(--i, 0) * 70ms);
 }
 
+/* A pane switched to later has no boot to wait for: its rows follow at once. */
+.pane-right:not(.pane-models) tbody tr {
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
 .term tbody tr.selected {
   background: var(--tui-selected);
 }
