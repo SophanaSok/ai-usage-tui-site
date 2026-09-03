@@ -37,6 +37,7 @@ export const TEXT = {
   readme: 'README.md',
   changelog: 'CHANGELOG.md',
   routing: 'docs/routing-analytics.md',
+  measurement: 'docs/what-a-max-subscription-bought.md',
   fixture: 'scripts/make-demo-fixture.py',
   renderer: 'scripts/render-readme-screenshots.sh',
 } as const;
@@ -240,6 +241,18 @@ export function quote(haystack: string, needle: string, where: string): string {
     throw new Error(`${where} no longer contains ${JSON.stringify(needle)}, which the site quotes verbatim`);
   }
   return needle;
+}
+
+/**
+ * The date a piece was written, from the `*Written YYYY-MM-DD …*` line it
+ * opens with. A page made from such a document dates itself by this rather
+ * than by the release, so the feed and the article tags say when the words
+ * were true, not when the checkout was cut.
+ */
+export function writtenOn(md: string, where: string): string {
+  const found = md.match(/^\*Written (\d{4}-\d{2}-\d{2}) /m);
+  if (!found) throw new Error(`${where} does not open with a "*Written YYYY-MM-DD" line`);
+  return found[1]!;
 }
 
 /* ---- Describing a page with its own document ------------------------------

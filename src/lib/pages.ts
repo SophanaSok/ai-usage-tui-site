@@ -20,6 +20,9 @@ export const PAGES: Page[] = [
   { path: 'routing/', label: 'Routing', nav: true },
   { path: 'output/', label: 'Output', nav: true },
   { path: 'privacy/', label: 'Privacy', nav: true },
+  // The launch write-up. One piece, so the entry is the piece; a second
+  // one makes this an index.
+  { path: 'what-a-max-subscription-bought/', label: 'Write-up', nav: true },
   { path: 'changelog/', label: 'Changelog', nav: true },
   // Reached from the home page's callout, not from the header: it argues a
   // point about the product rather than documenting part of it.

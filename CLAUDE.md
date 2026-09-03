@@ -10,7 +10,8 @@ build time, from the app repository.
   `github.com/SophanaSok/ai-usage-tui`). `AIU_SRC` overrides the path.
 - The trusted files are exactly those listed in `src/lib/source.ts`
   (`Cargo.toml` for the description, `CHANGELOG.md`, `README.md`,
-  `docs/routing-analytics.md`, the demo GIF and the eight panel screenshots
+  `docs/routing-analytics.md`, `docs/what-a-max-subscription-bought.md`, the
+  demo GIF and the eight panel screenshots
   under `docs/assets/`), plus two scripts trusted for one purpose: the hero's
   invented names are checked against `scripts/make-demo-fixture.py` and
   `scripts/render-readme-screenshots.sh`, which is where the screenshots got
@@ -41,7 +42,9 @@ build time, from the app repository.
   `quote()`. The README wraps at eighty columns, so an anchor must sit inside
   one line of it.
 - **No version literals** in `src/`, `tests/`, `README.md`, or this file. The
-  version and date come from the changelog's newest dated heading.
+  version and date come from the changelog's newest dated heading. A page
+  that renders a dated piece takes its date from the `*Written YYYY-MM-DD`
+  line the piece opens with, through `writtenOn()`.
 - Relative links inside rendered docs go to GitHub at the release tag.
 - Astro, no integrations, no UI framework, dark only. What JavaScript there
   is lives in two `<script>` blocks Astro processes, so the content security

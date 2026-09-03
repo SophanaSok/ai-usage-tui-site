@@ -22,9 +22,12 @@ interface Props {
   /** False for a page that is not a URL anyone can visit. */
   index?: boolean;
   ogType?: 'website' | 'article';
+  /** When the page's document dates itself; otherwise the release date. */
+  date?: string;
 }
-const { title, path, page, description, index = true, ogType = 'website' } = Astro.props;
+const { title, path, page, description, index = true, ogType = 'website', date } = Astro.props;
 const release = (await getEntry('release', 'current'))!.data;
+const pageDate = date ?? release.date;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (p: string) => `${base}/${p}`;
@@ -60,7 +63,7 @@ const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
       image={social}
       imageAlt={socialAlt}
       imageSize={socialSize}
-      date={release.date}
+      date={pageDate}
     />
     {canonical && (
       <Schema
@@ -70,12 +73,13 @@ const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
         canonical={canonical}
         image={new URL(social, Astro.site)}
         release={release}
+        date={pageDate}
       />
     )}
     <link
       rel="alternate"
       type="application/rss+xml"
-      title={`${release.name} releases`}
+      title={`${release.name} releases and writing`}
       href={url('changelog.xml')}
     />
   </head>

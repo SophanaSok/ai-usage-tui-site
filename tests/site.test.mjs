@@ -22,6 +22,7 @@ import {
   readmeGallery,
   sliceSection,
   sourceDir,
+  writtenOn,
 } from '../src/lib/source.ts';
 import { PAGES } from '../src/lib/pages.ts';
 import { DEMO, FOOTER, isDemo } from '../src/lib/demo.ts';
@@ -352,14 +353,35 @@ test('robots.txt names a sitemap that is there', () => {
   assert.ok(existsSync(join(DIST, 'sitemap.xml')));
 });
 
-test('the feed carries every release the changelog dates', () => {
+test('the feed carries every release the changelog dates, and the write-up', () => {
   const xml = readFileSync(join(DIST, 'changelog.xml'), 'utf8');
   const changelog = readFileSync(join(sourceDir(), TEXT.changelog), 'utf8');
   const dated = [...changelog.matchAll(/^## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}$/gm)].length;
   const items = [...xml.matchAll(/<item>/g)].length;
-  assert.equal(items, dated, `the feed has ${items} items for ${dated} dated releases`);
+  assert.equal(items, dated + 1, `the feed has ${items} items for ${dated} dated releases and one write-up`);
   assert.ok(!xml.includes(']]>'), 'the feed contains a sequence that would end a CDATA section');
   assert.match(xml, new RegExp(`<link>[^<]*${BASE}/changelog/`), 'the feed does not link back to the site');
+  assert.match(xml, new RegExp(`<link>[^<]*${BASE}/what-a-max-subscription-bought/</link>`), 'the feed does not carry the write-up');
+  // Newest first, as a reader expects and as the sort promises.
+  const dates = [...xml.matchAll(/<pubDate>([^<]+)<\/pubDate>/g)].map((m) => Date.parse(m[1]));
+  for (let i = 1; i < dates.length; i += 1) assert.ok(dates[i - 1] >= dates[i], 'the feed is not newest first');
+});
+
+test('the write-up is dated by its own opening line, and the rest by the release', () => {
+  const dir = sourceDir();
+  const written = writtenOn(readFileSync(join(dir, TEXT.measurement), 'utf8'), TEXT.measurement);
+  assert.match(written, /^\d{4}-\d{2}-\d{2}$/);
+  const graph = (html) => JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
+  const post = readFileSync(join(DIST, 'what-a-max-subscription-bought', 'index.html'), 'utf8');
+  assert.equal(property(post, 'article:published_time'), written);
+  assert.equal(graph(post).find((n) => n['@type'] === 'TechArticle').datePublished, written);
+  const { date: released } = readRelease(dir);
+  const changelog = readFileSync(join(DIST, 'changelog', 'index.html'), 'utf8');
+  assert.equal(property(changelog, 'article:published_time'), released);
+  assert.equal(graph(changelog).find((n) => n['@type'] === 'TechArticle').datePublished, released);
+  const xml = readFileSync(join(DIST, 'changelog.xml'), 'utf8');
+  const stamp = new Date(`${written}T00:00:00Z`).toUTCString();
+  assert.ok(xml.includes(`<pubDate>${stamp}</pubDate>`), 'the feed item does not carry the write-up’s own date');
 });
 
 /* ---- The social card ----------------------------------------------------- */

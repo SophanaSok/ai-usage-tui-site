@@ -1,0 +1,24 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+
+/* The launch write-up, whole, from the app repository. It opens with its own
+ * date, so the page's article tags and feed item carry that rather than the
+ * release the checkout is at. */
+const entry = (await getEntry('docs', 'measurement'))!;
+const { Content, headings } = await render(entry);
+---
+<Base
+  title="What a Max subscription bought"
+  path="what-a-max-subscription-bought/"
+  page="measurement"
+  description={entry.data.description}
+  ogType="article"
+  date={entry.data.date}
+>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={2} />
+    <article class="prose"><Content /></article>
+  </div>
+</Base>

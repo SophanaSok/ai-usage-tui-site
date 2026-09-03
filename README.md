@@ -5,8 +5,8 @@ served at <https://sophanasok.github.io/ai-usage-tui-site/>.
 
 The site keeps no copy of the product's documentation. At build time it reads
 the app repository, expected at `../ai-usage-tui` or wherever `AIU_SRC`
-points, and renders its README, changelog and routing guide, copying the
-screenshots alongside. The home page's hero is the dashboard drawn in HTML from
+points, and renders its README, changelog, routing guide and launch write-up, copying
+the screenshots alongside. The home page's hero is the dashboard drawn in HTML from
 the same invented demo data as those screenshots; every string it shows is
 registered with its origin and checked. The version shown is the newest dated
 entry in the app's changelog. In CI the app is checked out at its latest GitHub
