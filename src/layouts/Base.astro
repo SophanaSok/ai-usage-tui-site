@@ -109,7 +109,7 @@ const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
       </div>
     </footer>
 
-    <script is:inline>
+    <script>
       if (navigator.clipboard) {
         for (const pre of document.querySelectorAll('[data-copy] pre')) {
           const code = pre.querySelector('code');

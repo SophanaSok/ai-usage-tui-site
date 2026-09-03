@@ -196,7 +196,7 @@ const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
   </div>
 </Base>
 
-<script is:inline>
+<script>
   (() => {
     const term = document.getElementById('term');
     if (!term) return;
@@ -259,7 +259,10 @@ const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
       if (!inView || e.altKey || e.ctrlKey || e.metaKey) return;
       const target = e.target;
       if (target && /^(input|textarea|select)$/i.test(target.tagName)) return;
-      const key = term.querySelector(`label[data-key="${e.key}"]`);
+      // The key is a character the person typed, not a selector: escape it,
+      // and let a browser without CSS.escape ignore the shortcut.
+      if (!('CSS' in window) || !CSS.escape) return;
+      const key = term.querySelector(`label[data-key="${CSS.escape(e.key)}"]`);
       if (!key) return;
       stop();
       show(key.htmlFor.slice(2));

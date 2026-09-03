@@ -429,13 +429,14 @@ export function assetUrl(base: string, file: string): string {
 
 /**
  * Rewrites `href` and `src` in rendered HTML so that a document written for
- * GitHub reads correctly here. Runs on HTML rather than markdown so that a
- * link-shaped thing inside a code span is left alone.
+ * GitHub reads correctly here. Runs on HTML rather than markdown, and on tags
+ * rather than the whole text, so that a link-shaped thing inside a code span
+ * is left alone.
  */
 export function rewriteLinks(html: string, ctx: LinkContext): string {
   const blob = `${REPO}/blob/${ctx.tag}/`;
   const assets: readonly string[] = ASSETS;
-  return html.replace(/(href|src)="([^"]*)"/g, (all, attr: string, url: string) => {
+  const rewrite = (all: string, attr: string, url: string) => {
     if (url.startsWith(RAW_MAIN)) {
       const rel = url.slice(RAW_MAIN.length);
       return assets.includes(rel) ? `${attr}="${assetUrl(ctx.base, rel)}"` : all;
@@ -446,7 +447,10 @@ export function rewriteLinks(html: string, ctx: LinkContext): string {
     }
     if (/^[a-z][a-z0-9+.-]*:/i.test(url) || url.startsWith('/')) return all;
     return `${attr}="${new URL(url, `${blob}${ctx.sourcePath}`).href}"`;
-  });
+  };
+  // Only an attribute inside a tag is a link. A changelog entry that quotes
+  // `src="tools/**"` in a code span is text, and stays as written.
+  return html.replace(/<[a-z][^>]*>/gi, (tag) => tag.replace(/\b(href|src)="([^"]*)"/g, rewrite));
 }
 
 /* ---- The dashboard's palette ----------------------------------------------

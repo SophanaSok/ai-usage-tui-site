@@ -109,7 +109,12 @@ test('every internal link in dist resolves', () => {
   );
   let checked = 0;
   for (const page of pages) {
-    for (const [, , url] of readFileSync(page, 'utf8').matchAll(/(href|src)="([^"]+)"/g)) {
+    // Attributes inside tags: a code span that quotes `src="..."` is text.
+    const html = readFileSync(page, 'utf8');
+    const urls = [...html.matchAll(/<[a-z][^>]*>/gi)].flatMap((tag) =>
+      [...tag[0].matchAll(/\b(?:href|src)="([^"]+)"/g)].map((m) => m[1]),
+    );
+    for (const url of urls) {
       if (/^(https?:|mailto:|data:)/.test(url)) continue;
       const [path, fragment] = url.split('#');
       let target = page;
@@ -376,5 +381,34 @@ test('every page offers the social card, and none the demo GIF', () => {
     assert.equal(property(html, 'og:image:width'), String(OG.width));
     assert.equal(property(html, 'og:image:height'), String(OG.height));
     assert.ok(property(html, 'og:image:alt'), `${rel} does not describe its social image`);
+  }
+});
+
+/* ---- What the pages must never ship ------------------------------------- */
+
+test('no page ships a script it did not write, a handler, or an unsafe URL', () => {
+  for (const { rel, html } of builtPages()) {
+    const tags = [...html.matchAll(/<[a-z][^>]*>/gi)].map((m) => m[0]);
+    // Every script is the site's own: the JSON-LD data block, and the ones
+    // Astro bundled from the layout and the home page, served from here.
+    for (const tag of tags.filter((t) => /^<script\b/i.test(t))) {
+      const src = tag.match(/\bsrc="([^"]+)"/)?.[1];
+      if (src) assert.ok(src.startsWith(`${BASE}/`), `${rel} loads a script from ${src}`);
+    }
+    assert.doesNotMatch(html, /<(iframe|object|embed|form)\b/i, `${rel} embeds a document or a form`);
+    for (const tag of tags) {
+      assert.doesNotMatch(tag, /\son[a-z]+=/i, `${rel} has an inline event handler: ${tag}`);
+      assert.doesNotMatch(tag, /\b(href|src|action)="\s*(javascript|data|vbscript):/i, `${rel} has a script-scheme URL: ${tag}`);
+      const src = tag.match(/\bsrc="([^"]+)"/)?.[1];
+      if (src) assert.ok(src.startsWith(`${BASE}/`), `${rel} loads ${src} from outside the site`);
+      const href = tag.match(/\bhref="([^"]+)"/)?.[1];
+      if (href) assert.ok(/^(https:|#|\/)/.test(href), `${rel} links to ${href}, which is not https or local`);
+    }
+    // And the policy that holds the browser to the same: a CSP on every page.
+    const csp = html.match(/<meta http-equiv="content-security-policy" content="([^"]*)"/i)?.[1];
+    assert.ok(csp, `${rel} carries no content security policy`);
+    assert.match(csp, /script-src 'self' 'sha\d+-/, `${rel}: the policy does not hash its scripts`);
+    assert.doesNotMatch(csp, /script-src[^;]*unsafe/, `${rel}: the script policy allows unsafe sources`);
+    assert.match(csp, /default-src 'self'/, `${rel}: the policy has no default-src`);
   }
 });

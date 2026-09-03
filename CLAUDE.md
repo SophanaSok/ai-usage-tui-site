@@ -44,9 +44,11 @@ build time, from the app repository.
   version and date come from the changelog's newest dated heading.
 - Relative links inside rendered docs go to GitHub at the release tag.
 - Astro, no integrations, no UI framework, dark only. What JavaScript there
-  is lives in `is:inline` blocks and every feature it adds degrades to
-  working HTML without it: the hero's footer keys switch panes with CSS
-  radios; the script adds the count-up, the cycle and the clock.
+  is lives in two `<script>` blocks Astro processes, so the content security
+  policy it emits carries their hashes, and every feature they add degrades
+  to working HTML without them: the hero's footer keys switch panes with CSS
+  radios; the script adds the count-up, the cycle and the clock. Nothing is
+  loaded from outside the site: no fonts, no analytics, no CDN.
 - `src/lib/source.ts`, `src/lib/pages.ts` and `src/lib/demo.ts` must stay
   erasable TypeScript — types, `interface` and `as const` only — because
   `tests/site.test.mjs` imports them under Node's type stripping.
