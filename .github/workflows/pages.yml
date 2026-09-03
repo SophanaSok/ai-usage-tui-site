@@ -62,7 +62,7 @@ jobs:
       # On a pull request the card is the thing worth looking at, so it is
       # offered on its own rather than buried in a Pages artifact.
       - if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: social-card
           path: site/dist/aiu/og.png
