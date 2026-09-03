@@ -25,6 +25,7 @@ import {
   rewriteLinks,
   sliceSection,
   sourceDir,
+  writtenOn,
   type SliceOptions,
 } from '../lib/source';
 
@@ -127,6 +128,11 @@ interface Doc {
    * the site adds.
    */
   chips?: boolean;
+  /**
+   * The document opens with a `*Written YYYY-MM-DD` line and the page dates
+   * itself by it, rather than by the release the checkout is at.
+   */
+  dated?: boolean;
 }
 
 const DOCS: Doc[] = [
@@ -154,13 +160,16 @@ const DOCS: Doc[] = [
   { id: 'features', title: 'What it shows', file: TEXT.readme, slice: { heading: 'What it shows', until: 'Unknown cost is kept unknown' }, lede: 'Unknown cost is kept unknown' },
   { id: 'classes', title: 'Categories', file: TEXT.readme, slice: { heading: 'What it shows', from: '| Category | Meaning |' }, lede: '`PAID` is about who bills', chips: true },
   { id: 'changelog', title: 'Changelog', file: TEXT.changelog },
+  // The launch write-up, whole. Its lede is the one sentence that puts the
+  // two sides of the measurement next to each other.
+  { id: 'measurement', title: 'What a Max subscription bought', file: TEXT.measurement, lede: 'That is a ratio a reader can form an opinion about', dated: true },
 ];
 
 /** The documents the pages render, each with `rendered` so `render(entry)` works. */
 export function docsLoader(): Loader {
   return {
     name: 'aiu-docs',
-    schema: z.object({ title: z.string(), source: z.string(), description: z.string() }),
+    schema: z.object({ title: z.string(), source: z.string(), description: z.string(), date: z.string().optional() }),
     async load({ store, renderMarkdown, watcher, config }) {
       const dir = sourceDir();
       const { tag, notes } = readRelease(dir);
@@ -185,7 +194,8 @@ export function docsLoader(): Loader {
         // span, and it is the only markdown parser the site is allowed to have.
         const lede = doc.lede ? ledeParagraph(whole, doc.lede, doc.file) : notes;
         const description = clamp(plainText((await renderMarkdown(lede)).html));
-        store.set({ id: doc.id, data: { title: doc.title, source: doc.file, description }, body: md, rendered });
+        const date = doc.dated ? writtenOn(whole, doc.file) : undefined;
+        store.set({ id: doc.id, data: { title: doc.title, source: doc.file, description, date }, body: md, rendered });
       }
     },
   };

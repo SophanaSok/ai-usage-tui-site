@@ -19,11 +19,15 @@ const cursor = (await getEntry('docs', 'cursor'))!;
 // The routing section's opening paragraphs, without the panel description
 // that the screenshot beside them already shows.
 const { Content: Routing } = await render((await getEntry('docs', 'routing-lede'))!);
+// The launch write-up has its own page; the home page shows the sentence
+// that page describes itself with.
+const measurement = (await getEntry('docs', 'measurement'))!;
 
 const dir = sourceDir();
 const readme = readFileSync(resolve(dir, TEXT.readme), 'utf8');
 const quickstart = sliceSection(readme, 'Quick start');
 const install = sliceSection(readme, 'Installation');
+const measurementMd = readFileSync(resolve(dir, TEXT.measurement), 'utf8');
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (p: string) => `${base}/${p}`;
@@ -47,6 +51,7 @@ const promise = quote(readme, 'Privacy and network behavior', TEXT.readme);
 const whatItShows = quote(readme, 'What it shows', TEXT.readme);
 const cursorHeading = quote(readme, 'Why there is no Cursor collector', TEXT.readme);
 const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
+const measurementHeading = quote(measurementMd, 'What a Max subscription bought', TEXT.measurement);
 
 
 ---
@@ -144,6 +149,14 @@ const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
     </section>
 
     <section class="section">
+      <div class="section-head"><h2 id="measurement">{measurementHeading}</h2></div>
+      <div class="callout">
+        <p>{measurement.data.description}</p>
+        <p><a href={url('what-a-max-subscription-bought/')}>The whole measurement &#8594;</a></p>
+      </div>
+    </section>
+
+    <section class="section">
       <div class="section-head"><h2 id="panels">Every panel</h2></div>
       <div class="gallery">
         {release.gallery.map((panel) => (
@@ -190,7 +203,7 @@ const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
         <li><a href={`${release.repository}/blob/${release.tag}/docs/omarchy.md`}>Omarchy</a></li>
         <li><a href={`${release.repository}/blob/${release.tag}/docs/architecture.md`}>Architecture</a></li>
         <li><a href={`${release.repository}/blob/${release.tag}/docs/roadmap.md`}>Roadmap</a></li>
-        <li><a href={`${release.repository}/blob/${release.tag}/docs/what-a-max-subscription-bought.md`}>What a Max subscription bought</a></li>
+        <li><a href={url('what-a-max-subscription-bought/')}>What a Max subscription bought</a></li>
       </ul>
     </section>
   </div>
