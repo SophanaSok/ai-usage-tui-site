@@ -1,0 +1,22 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+
+/* Everything the tool does when it is not a dashboard: one-shot output,
+ * the config file, budget checks and the flag table, in the README's order. */
+const ids = ['output', 'config', 'budgets', 'cli'] as const;
+const docs = await Promise.all(ids.map(async (id) => {
+  const entry = (await getEntry('docs', id))!;
+  return { entry, ...(await render(entry)) };
+}));
+const headings = docs.flatMap((d) => d.headings.filter((h) => h.depth === 1).map((h) => ({ ...h, depth: 2 })));
+---
+<Base title="Output and configuration" path="output/" page="output" description={docs[0]!.entry.data.description}>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={2} label="Sections" />
+    <div class="stack">
+      {docs.map(({ Content }) => <article class="prose"><Content /></article>)}
+    </div>
+  </div>
+</Base>

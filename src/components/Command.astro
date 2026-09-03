@@ -1,0 +1,17 @@
+---
+import { quote } from '../lib/source';
+
+/* A shell command the page types out itself, checked against the file it came
+ * from. The highlighter splits a rendered code block across spans, so a
+ * command that must survive as a literal string cannot come from markdown. */
+interface Props {
+  command: string;
+  /** The trusted text the command must appear in, verbatim. */
+  source: string;
+  /** Where that text came from, named in the error if it stops saying it. */
+  from: string;
+}
+const { command, source, from } = Astro.props;
+const checked = quote(source, command, from);
+---
+<div data-copy><pre><code>{checked}</code></pre></div>

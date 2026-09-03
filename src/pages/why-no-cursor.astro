@@ -1,0 +1,21 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+/* The README's argument, on a page of its own. It is reached from the home
+ * page's callout rather than the header: it argues a point about the product
+ * rather than documenting part of it. */
+const entry = (await getEntry('docs', 'cursor'))!;
+const { Content } = await render(entry);
+---
+<Base title="Why there is no Cursor collector" path="why-no-cursor/" page="cursor" description={entry.data.description}>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-title">
+        <p class="eyebrow">Deliberately absent</p>
+        <h1>Why there is no Cursor collector</h1>
+      </div>
+    </section>
+    <article class="prose prose-flush"><Content /></article>
+  </div>
+</Base>

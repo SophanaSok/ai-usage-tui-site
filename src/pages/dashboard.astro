@@ -1,0 +1,52 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+import { assetSize, assetUrl, sourceDir } from '../lib/source';
+
+/* The README's account of the interactive dashboard, its eight panels with
+ * the captions the README gives them, and the subscription-limits section. */
+const release = (await getEntry('release', 'current'))!.data;
+const dashboard = (await getEntry('docs', 'dashboard'))!;
+const limits = (await getEntry('docs', 'limits'))!;
+const first = await render(dashboard);
+const second = await render(limits);
+const headings = [
+  ...first.headings.filter((h) => h.depth === 1).map((h) => ({ ...h, depth: 2 })),
+  { depth: 2, slug: 'panels', text: 'Every panel' },
+  ...second.headings.filter((h) => h.depth === 1).map((h) => ({ ...h, depth: 2 })),
+];
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dir = sourceDir();
+---
+<Base title="Dashboard" path="dashboard/" page="dashboard" description={dashboard.data.description}>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={2} label="Sections" />
+    <div class="stack">
+      <article class="prose"><first.Content /></article>
+      <section>
+        <h2 id="panels">Every panel</h2>
+        <div class="gallery">
+          {release.gallery.map((panel) => (
+            <figure>
+              <div class="frame">
+                <div class="frame-bar"><span class="label">{panel.key ?? 'ai-usage-tui'}</span></div>
+                <div class="frame-body">
+                  <img src={assetUrl(base, panel.file)} alt={panel.alt} {...assetSize(dir, panel.file)} loading="lazy" decoding="async" />
+                </div>
+              </div>
+              <figcaption>
+                <b>{panel.title}</b>
+                {panel.key && <span class="cls cls-key">{panel.key}</span>}
+                {panel.blurb}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p class="note">{release.provenance}</p>
+      </section>
+      <article class="prose"><second.Content /></article>
+    </div>
+  </div>
+</Base>

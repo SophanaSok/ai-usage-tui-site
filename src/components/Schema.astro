@@ -1,0 +1,109 @@
+---
+/* What the page says about the product to a machine.
+ *
+ * Every claim-bearing value is read from the checkout: the name, description,
+ * version, date, keywords and categories are the crate's own. The schema.org
+ * terms around them — the `@type` names, `applicationCategory`,
+ * `programmingLanguage` — are vocabulary rather than statements about the
+ * product, which is the one thing here the trusted files do not supply.
+ *
+ * Absent on purpose: `aggregateRating` and `review`, the fields that actually
+ * produce a starred result. There is nothing to read them from, and inventing
+ * them is exactly what this site does not do.
+ */
+interface Release {
+  name: string;
+  version: string;
+  date: string;
+  tag: string;
+  description: string;
+  repository: string;
+  license: string;
+  author: string;
+  keywords: string[];
+  categories: string[];
+  rustVersion: string;
+  platforms: string;
+}
+
+interface Props {
+  kind: 'home' | 'doc';
+  title: string;
+  description: string;
+  canonical: URL;
+  image: URL;
+  release: Release;
+}
+const { kind, title, description, canonical, image, release } = Astro.props;
+
+const home = new URL(import.meta.env.BASE_URL.replace(/\/?$/, '/'), Astro.site);
+const id = (fragment: string) => `${home.href}#${fragment}`;
+const crate = `https://crates.io/crates/${release.name}`;
+
+const author = {
+  '@type': 'Person',
+  '@id': id('author'),
+  name: release.author,
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': id('website'),
+  url: home.href,
+  name: release.name,
+  description: release.description,
+  inLanguage: 'en',
+  publisher: { '@id': id('author') },
+};
+
+const app = {
+  '@type': ['SoftwareApplication', 'SoftwareSourceCode'],
+  '@id': id('app'),
+  name: release.name,
+  description: release.description,
+  url: home.href,
+  applicationCategory: 'DeveloperApplication',
+  applicationSubCategory: release.categories.join(', '),
+  operatingSystem: release.platforms,
+  programmingLanguage: 'Rust',
+  runtimePlatform: `Rust ${release.rustVersion}`,
+  softwareVersion: release.version,
+  datePublished: release.date,
+  releaseNotes: `${release.repository}/releases/tag/${release.tag}`,
+  keywords: release.keywords.join(', '),
+  codeRepository: release.repository,
+  downloadUrl: `${release.repository}/releases`,
+  installUrl: crate,
+  sameAs: [release.repository, crate],
+  license: `${release.repository}/blob/${release.tag}/LICENSE`,
+  image: image.href,
+  author: { '@id': id('author') },
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+};
+
+const article = {
+  '@type': 'TechArticle',
+  '@id': `${canonical.href}#article`,
+  headline: title,
+  description,
+  url: canonical.href,
+  inLanguage: 'en',
+  datePublished: release.date,
+  dateModified: release.date,
+  author: { '@id': id('author') },
+  isPartOf: { '@id': id('website') },
+  about: { '@id': id('app') },
+  mainEntityOfPage: canonical.href,
+};
+
+// `set:html` writes the string as it stands, which is what JSON needs — HTML
+// escaping would corrupt it. The only sequences that can end the element early
+// are `</script` and the legacy `<!--`, and one of these descriptions really
+// does contain a literal tag, so every `<` goes out as its JSON escape.
+const json = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': kind === 'home' ? [website, author, app] : [website, author, app, article],
+}).replace(/</g, '\\u003c');
+---
+<script type="application/ld+json" set:html={json} />

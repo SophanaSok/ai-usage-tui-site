@@ -1,0 +1,21 @@
+{
+  "name": "ai-usage-tui-site",
+  "private": true,
+  "type": "module",
+  "description": "Website for ai-usage-tui, built from the app repository's own docs",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "node --test \"tests/**/*.test.mjs\"",
+    "verify": "npm run build && npm run check"
+  },
+  "devDependencies": {
+    "astro": "^7.2.10",
+    "sharp": "^0.35.4"
+  }
+}

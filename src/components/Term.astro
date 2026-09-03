@@ -1,0 +1,167 @@
+---
+/* The animated dashboard.
+ *
+ * A drawing of the TUI in HTML and CSS, from the same invented demo data as
+ * the README screenshots. Every string it shows comes from `lib/demo.ts`, and
+ * `checkDemo` holds the named ones to the files they are defined in. Without
+ * JavaScript it is a still of the main view whose footer keys switch the
+ * right-hand pane; the script on the home page adds the boot, the count-up,
+ * the cycle and the clock. */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { TEXT, sourceDir } from '../lib/source';
+import { BURN, CLASSES, FLOW, FOOTER, HEADER, LIMITS, MODELS, ROUTING, TILES, WARN, checkDemo } from '../lib/demo';
+import '../styles/term.css';
+
+interface Props {
+  /** The README's own sentence about its images. */
+  caption: string;
+}
+const { caption } = Astro.props;
+
+const dir = sourceDir();
+const read = (file: string) => readFileSync(resolve(dir, file), 'utf8');
+checkDemo({ readme: read(TEXT.readme), fixture: read(TEXT.fixture), renderer: read(TEXT.renderer) });
+
+// The panes the hero draws, keyed by the radio that shows each one.
+const PANES = ['models', 'routing', 'limits', 'burn'] as const;
+let order = 0;
+const next = () => order++;
+---
+<figure class="term-figure">
+  <div class="term" id="term" role="img" aria-label="An illustration of the dashboard, drawn in HTML from the same invented demo data as the screenshots below">
+    {PANES.map((pane) => (
+      <input class="term-k" type="radio" name="term-pane" id={`k-${pane}`} value={pane} checked={pane === 'models'} tabindex="-1" />
+    ))}
+
+    <header class="term-head" style={`--i:${next()}`}>
+      <span class="term-badge">{HEADER.badge.text}</span>
+      {HEADER.status.map((status) => <span class="term-status">{status.text}</span>)}
+      <span class="term-clock" data-clock>{HEADER.clock.text}</span>
+    </header>
+
+    <p class="term-warn" style={`--i:${next()}`}>
+      <span class="term-warn-chip">{WARN.chip.text}</span>
+      <span>{WARN.text.text}</span>
+    </p>
+
+    <div class="term-tiles">
+      {TILES.map((tile) => (
+        <div class={`tile tile-${tile.cls}`} style={`--i:${next()}`}>
+          <span class="tile-title">{tile.title.text}</span>
+          <b class="tile-value" data-count={tile.count} data-unit={tile.unit}>{tile.value.text}</b>
+          <span class="tile-sub">{tile.sub.text}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="term-body">
+      <section class="pane pane-flow" style={`--i:${next()}`}>
+        <span class="pane-title">{FLOW.title.text}</span>
+        <dl class="flow">
+          {FLOW.rows.map(([label, value]) => (
+            <div><dt>{label.text}</dt><dd>{value.text}</dd></div>
+          ))}
+        </dl>
+        <p class="flow-cost"><span>{FLOW.cost[0].text}</span> <b>{FLOW.cost[1].text}</b></p>
+        <p class="flow-status"><span>{FLOW.status[0].text}</span> <span class="lit">{FLOW.status[1].text}</span></p>
+      </section>
+
+      <section class="pane pane-right pane-models" style={`--i:${next()}`}>
+        <span class="pane-title">{MODELS.title.text}</span>
+        <div class="scroll">
+        <table>
+          <thead>
+            <tr>{MODELS.head.map((h, i) => <th class={i === 2 ? 'sorted' : undefined}>{h.text}</th>)}</tr>
+          </thead>
+          <tbody>
+            {MODELS.rows.map((row, i) => (
+              <tr class={i === 0 ? 'selected' : undefined} style={`--i:${i}`}>
+                <td><span>{row.provider.text}</span> / <span>{row.model.text}</span></td>
+                <td><span class={`cls cls-${row.cls}`}>{CLASSES[row.cls].text}</span></td>
+                <td>{row.tokens.text}</td>
+                <td class={row.note ? 'c-yellow' : `c-${row.cls}`}>{row.cost.text}{row.note && <> <span class="dim">{row.note.text}</span></>}</td>
+                <td>{row.reqs.text}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        </div>
+        <span class="caret" aria-hidden="true"></span>
+      </section>
+
+      <section class="pane pane-right pane-routing">
+        <span class="pane-title">{ROUTING.escalations.title.text}</span>
+        <p class="esc-lead"><b class="c-cyan">{ROUTING.escalations.share.text}</b> <span>{ROUTING.escalations.sentence.text}</span></p>
+        <ul class="esc">
+          {ROUTING.escalations.rows.map((row) => (
+            <li><span class="c-yellow">{row.from.text}</span> → <span class="c-yellow">{row.to.text}</span> <span class="dim">{row.count.text}</span> <b class="c-green">{row.after.text}</b></li>
+          ))}
+        </ul>
+        <span class="pane-title pane-title-inner">{ROUTING.title.text}</span>
+        <div class="scroll">
+        <table class="routing-table">
+          <thead><tr>{ROUTING.head.map((h) => <th>{h.text}</th>)}</tr></thead>
+          <tbody>
+            {ROUTING.rows.map((row, i) => (
+              <tr class={i === 0 ? 'selected' : undefined} style={`--i:${i}`}>
+                <td>{row.agent.text}</td>
+                <td>{row.model.text}</td>
+                <td class="c-green">{row.cost.text}</td>
+                {row.cells.map((cell, j) => <td class={j === 0 ? (row.pass === 'ok' ? 'c-green' : 'c-yellow') : undefined}>{cell.text}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <section class="pane pane-right pane-limits">
+        <span class="pane-title">{LIMITS.title.text}</span>
+        <div class="scroll">
+        <table class="limits-table">
+          <thead><tr><th>{LIMITS.head[0].text}</th><th>{LIMITS.head[1].text}</th><th></th><th>{LIMITS.head[2].text}</th><th>{LIMITS.head[3].text}</th><th>{LIMITS.head[4].text}</th></tr></thead>
+          <tbody>
+            {LIMITS.rows.map((row, i) => (
+              <tr style={`--i:${i}`}>
+                <td class="dim">{row.agent.text}</td>
+                <td>{row.window.text}</td>
+                <td><span class="gauge" style={`--pct:${row.pct}`}></span></td>
+                <td>{row.used.text}</td>
+                <td class="dim">{row.resets.text}</td>
+                <td></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        </div>
+        <p class="pane-foot dim">{LIMITS.foot.text}</p>
+      </section>
+
+      <section class="pane pane-right pane-burn">
+        <span class="pane-title">{BURN.title.text} <span class="dim">{BURN.window.text}</span></span>
+        <dl class="burn">
+          {BURN.rows.map(([label, value]) => (
+            <div><dt class="dim">{label.text}</dt><dd>{value.text}</dd></div>
+          ))}
+        </dl>
+        <dl class="burn burn-budgets">
+          {BURN.budgets.map((row) => (
+            <div><dt class="dim">{row.scope.text}</dt><dd class="c-yellow">{row.left.text} <span>{row.remaining.text}</span></dd></div>
+          ))}
+        </dl>
+      </section>
+    </div>
+
+    <footer class="term-foot" style={`--i:${next()}`}>
+      {FOOTER.map((entry) =>
+        entry.pane ? (
+          <label for={`k-${entry.pane}`} data-key={entry.key.text}><b>{entry.key.text}</b> {entry.word.text}</label>
+        ) : (
+          <span data-key={entry.key.text}><b>{entry.key.text}</b> {entry.word.text}</span>
+        ),
+      )}
+    </footer>
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>

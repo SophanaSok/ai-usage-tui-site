@@ -1,0 +1,14 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+
+const entry = (await getEntry('docs', 'changelog'))!;
+const { Content, headings } = await render(entry);
+---
+<Base title="Changelog" path="changelog/" page="changelog" description={entry.data.description} ogType="article">
+  <div class="with-rail shell">
+    <Contents headings={headings} depth={2} />
+    <article class="prose"><Content /></article>
+  </div>
+</Base>

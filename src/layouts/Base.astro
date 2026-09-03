@@ -1,0 +1,138 @@
+---
+import { getEntry } from 'astro:content';
+import Meta from '../components/Meta.astro';
+import Schema from '../components/Schema.astro';
+import { OG, assetUrl } from '../lib/source';
+import { PAGES } from '../lib/pages';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+
+interface Props {
+  title: string;
+  /** Path under the site root, without `base`, e.g. `install/`. */
+  path: string;
+  /** Names the page for CSS that has to reach rendered markdown it cannot class. */
+  page?: string;
+  /**
+   * How this page describes itself, in the words of the document it renders.
+   * The home page falls back to the README's opening sentence.
+   */
+  description?: string;
+  /** False for a page that is not a URL anyone can visit. */
+  index?: boolean;
+  ogType?: 'website' | 'article';
+}
+const { title, path, page, description, index = true, ogType = 'website' } = Astro.props;
+const release = (await getEntry('release', 'current'))!.data;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = (p: string) => `${base}/${p}`;
+// The card is generated into `public/aiu/` by the release loader. Its size
+// is fixed by the generator rather than measured here; `npm run check` is what
+// holds the file on disk to it.
+const social = assetUrl(base, OG.file);
+const socialSize = { width: OG.width, height: OG.height };
+const socialAlt = release.images.find((i) => i.file === OG.from)?.alt ?? release.description;
+const nav = PAGES.filter((p) => p.nav);
+
+// Two separators, two jobs: an em dash joins the name to what the crate calls
+// itself, a middot joins a page to the site. The home title runs past the
+// window a result list shows, but the phrase a reader searched for is inside
+// the part that survives the cut, which is the point of leading with it.
+const pageTitle =
+  path === '' ? `${release.name} — ${release.description}` : `${title} · ${release.name} · ${release.kind}`;
+const pageDescription = description ?? release.lede;
+const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    {index && <meta name="description" content={pageDescription} />}
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <Meta
+      title={pageTitle}
+      description={pageDescription}
+      canonical={canonical}
+      ogType={ogType}
+      image={social}
+      imageAlt={socialAlt}
+      imageSize={socialSize}
+      date={release.date}
+    />
+    {canonical && (
+      <Schema
+        kind={path === '' ? 'home' : 'doc'}
+        title={pageTitle}
+        description={pageDescription}
+        canonical={canonical}
+        image={new URL(social, Astro.site)}
+        release={release}
+      />
+    )}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${release.name} releases`}
+      href={url('changelog.xml')}
+    />
+  </head>
+  <body class={page ? `page-${page}` : undefined}>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="bar shell">
+        <a class="brand" href={url('')}><span class="mark" aria-hidden="true">AI</span>ai-usage-tui</a>
+        <nav class="site-nav" aria-label="Sections">
+          {nav.map(({ path: p, label }) => (
+            <a href={url(p)} aria-current={p === path ? 'page' : undefined}>{label}</a>
+          ))}
+          <a class="out" href={release.repository}>GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="bar shell">
+        <p class="release">ai-usage-tui <a href={url('changelog/')}>{release.tag}</a> · <time datetime={release.date}>{release.date}</time></p>
+        <nav aria-label="Elsewhere">
+          <a href={`${release.repository}/blob/${release.tag}/LICENSE`}>MIT</a>
+          <a href={`https://crates.io/crates/${release.name}`}>crates.io</a>
+          <a href={`${release.repository}/releases`}>Releases</a>
+          <a href="https://github.com/SophanaSok/ai-usage-tui-site">This site's source</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script is:inline>
+      if (navigator.clipboard) {
+        for (const pre of document.querySelectorAll('[data-copy] pre')) {
+          const code = pre.querySelector('code');
+          if (!code) continue;
+          const wrap = document.createElement('div');
+          wrap.className = 'pre-wrap';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'copy';
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(code.textContent.replace(/\n$/, ''));
+              btn.textContent = 'Copied';
+              setTimeout(() => (btn.textContent = 'Copy'), 1200);
+            } catch {
+              btn.textContent = 'Copy failed';
+            }
+          });
+          pre.replaceWith(wrap);
+          wrap.append(pre, btn);
+        }
+      }
+    </script>
+  </body>
+</html>

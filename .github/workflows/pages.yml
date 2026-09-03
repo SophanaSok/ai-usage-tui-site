@@ -1,0 +1,86 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  # Build and check a proposed change without deploying it. The social card is
+  # rasterised with whatever fonts the runner has, so the first time this
+  # workflow sees a change should not also be the first time it ships one.
+  pull_request:
+    branches: [main]
+  schedule:
+    # Daily, so an app release is picked up without the app repo knowing about this one.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One group per ref, so a pull request build only ever cancels an older build
+# of the same pull request and never the deploy that a merge just started.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: site
+
+      - name: Resolve the app's latest release
+        id: app
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "tag=$(gh api repos/SophanaSok/ai-usage-tui/releases/latest --jq .tag_name)" >> "$GITHUB_OUTPUT"
+
+      # Read-only. Checked out as a sibling so the site's default ../ai-usage-tui holds.
+      - uses: actions/checkout@v7
+        with:
+          repository: SophanaSok/ai-usage-tui
+          ref: ${{ steps.app.outputs.tag }}
+          path: ai-usage-tui
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: site/.node-version
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - run: npm ci
+        working-directory: site
+
+      - run: npm run build && npm run check
+        working-directory: site
+        env:
+          AIU_TAG: ${{ steps.app.outputs.tag }}
+
+      # On a pull request the card is the thing worth looking at, so it is
+      # offered on its own rather than buried in a Pages artifact.
+      - if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v5
+        with:
+          name: social-card
+          path: site/dist/aiu/og.png
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

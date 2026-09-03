@@ -1,0 +1,1003 @@
+/* The pieces the pages are built from. */
+
+/* ---- Site header -------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header .bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  min-height: 3.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-inline-end: auto;
+  font: 600 var(--step-0) / 1 var(--font-mono);
+  color: var(--fg);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.brand .mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid;
+  place-items: center;
+  font-size: var(--step--2);
+  font-weight: 700;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-4);
+  font: 500 var(--step--1) / 1 var(--font-mono);
+}
+
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding-block: var(--s-2);
+  transition: color var(--fast) var(--ease);
+}
+
+.site-nav a:hover {
+  color: var(--fg);
+}
+
+.site-nav a[aria-current='page'] {
+  color: var(--fg);
+}
+
+.site-nav .out::after {
+  content: ' \2197';
+  color: var(--muted);
+}
+
+@media (max-width: 46rem) {
+  .site-header {
+    position: static;
+  }
+
+  /* Brand takes the first row; the links take the second. */
+  .site-header .bar {
+    flex-wrap: wrap;
+    padding-block: var(--s-3);
+    gap: var(--s-2) var(--s-4);
+  }
+
+  .brand {
+    margin-inline-end: auto;
+  }
+
+  .site-nav {
+    order: 1;
+    flex-basis: 100%;
+  }
+}
+
+/* ---- Eyebrows, chips, labels -------------------------------------------- */
+
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin: 0;
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.3em 0.65em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.chip-accent {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.7rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--fg);
+  font: 500 var(--step--1) / 1 var(--font-mono);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease), border-color var(--fast) var(--ease),
+    background-color var(--fast) var(--ease);
+}
+
+.btn:hover {
+  border-color: var(--muted);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  border-color: var(--accent);
+  filter: brightness(1.06);
+}
+
+/* ---- Sections ----------------------------------------------------------- */
+
+.section {
+  padding-block: var(--s-8);
+  border-top: 1px solid var(--border);
+}
+
+.section-head {
+  margin-block-end: var(--s-6);
+  max-width: var(--measure);
+}
+
+.section-head h2 {
+  margin: 0;
+  font: 600 var(--step-2) / var(--leading-tight) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+}
+
+.section-head h2::before {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 2px;
+  margin-block-end: var(--s-4);
+  background: var(--accent);
+}
+
+.note {
+  margin-block: var(--s-4) 0;
+  color: var(--muted);
+  font-size: var(--step--1);
+  max-width: var(--measure);
+}
+
+/* ---- Hero --------------------------------------------------------------- */
+
+.hero {
+  padding-block: var(--s-7) var(--s-7);
+  display: grid;
+  gap: var(--s-6);
+}
+
+.hero-copy {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.hero-title {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: var(--step-5);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+.hero-aside {
+  display: grid;
+  gap: var(--s-5);
+  justify-items: start;
+}
+
+.lede {
+  margin: 0;
+  font-size: var(--step-2);
+  line-height: var(--leading-snug);
+  color: var(--muted);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+
+.hero h1 .tui {
+  color: var(--accent);
+}
+
+@media (min-width: 62rem) {
+  .hero-copy {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    column-gap: var(--s-7);
+  }
+}
+
+/* ---- Hint line ---------------------------------------------------------- */
+/* The dashboard draws a key line along the foot of its own screen, keys and
+ * separators in mono. This is the same idea: short phrases, each one verbatim
+ * from a trusted file, so the strip states nothing the docs do not. */
+
+.hintline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+  margin: 0;
+  list-style: none;
+  padding: var(--s-3) var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: 400 var(--step--1) / 1.4 var(--font-mono);
+  color: var(--muted);
+}
+
+.hintline li {
+  margin: 0;
+}
+
+/* The separators are only a separator when there is something either side of
+ * them on the same line, so below the wrap the strip becomes a list. */
+@media (min-width: 56rem) {
+  .hintline li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+
+  .hintline li + li::before {
+    content: '\00b7';
+    color: var(--border);
+  }
+}
+
+@media (max-width: 55.99rem) {
+  .hintline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-2);
+  }
+}
+
+.hintline b {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* ---- Frames ------------------------------------------------------------- */
+/* The screenshots are painted in the terminal's own black, a step below the
+ * page, so the frame supplies a mat in that colour and a steel hairline: the
+ * image sits inside it with a ring showing on every side. */
+
+.frame {
+  background: var(--mat);
+  border: 1px solid var(--frame-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.frame-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 2.15rem;
+  padding-inline: var(--s-3);
+  border-bottom: 1px solid var(--frame-line);
+  font: 400 var(--step--2) / 1 var(--font-mono);
+  color: var(--muted);
+}
+
+.frame-bar::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 20px;
+  border-radius: 50%;
+  background: currentcolor;
+  box-shadow: 14px 0 0 currentcolor, 28px 0 0 currentcolor;
+  opacity: 0.4;
+}
+
+.frame-bar .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frame-body {
+  display: block;
+  padding: var(--s-2);
+}
+
+.frame-body pre {
+  margin: 0;
+  padding: var(--s-4);
+  background: var(--bg);
+  border: 0;
+  border-radius: 6px;
+}
+
+.frame-body img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* ---- Feature cards ------------------------------------------------------ */
+/* The README's list arrives as a plain <ul>. The lead-in stays inline, because
+ * most items continue their sentence past the bold run. */
+
+.features > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: feature;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* The rules are drawn by each card rather than by a gap showing a background
+ * through, so an odd item count leaves an empty cell painted like the page
+ * instead of a block of border colour. */
+.features > ul > li {
+  counter-increment: feature;
+  position: relative;
+  margin: 0;
+  padding: var(--s-5) var(--s-5) var(--s-5) 3.5rem;
+  background: var(--bg);
+  color: var(--muted);
+  box-shadow: 1px 0 0 var(--border), 0 1px 0 var(--border);
+}
+
+.features > ul > li::before {
+  content: counter(feature, decimal-leading-zero);
+  position: absolute;
+  inset-inline-start: var(--s-5);
+  top: calc(var(--s-5) + 0.28em);
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.features > ul > li > strong:first-child {
+  color: var(--fg);
+}
+
+.features code {
+  white-space: normal;
+}
+
+/* ---- Gallery ------------------------------------------------------------ */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: var(--s-6);
+}
+
+.gallery figcaption {
+  max-width: 52ch;
+}
+
+/* ---- Link list ---------------------------------------------------------- */
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.links li {
+  margin: 0;
+  background: var(--bg);
+}
+
+.links a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5);
+  color: var(--fg);
+  text-decoration: none;
+  font: 500 var(--step--1) / 1.4 var(--font-mono);
+  transition: background-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.links a::after {
+  content: '\2192';
+  color: var(--muted);
+}
+
+.links a:hover {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+/* ---- Copy button -------------------------------------------------------- */
+
+.pre-wrap {
+  position: relative;
+}
+
+.pre-wrap .copy {
+  position: absolute;
+  top: var(--s-2);
+  inset-inline-end: var(--s-2);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--muted);
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.pre-wrap:hover .copy,
+.pre-wrap .copy:focus-visible {
+  opacity: 1;
+}
+
+.pre-wrap .copy:hover {
+  color: var(--fg);
+}
+
+/* ---- Install tabs (CSS only) -------------------------------------------- */
+
+.tabs > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tabs-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin-block-end: var(--s-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs-strip label {
+  padding: var(--s-2) 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--muted);
+  font: 500 var(--step--1) / 1 var(--font-mono);
+  cursor: pointer;
+  transition: color var(--fast) var(--ease);
+}
+
+.tabs-strip label:hover {
+  color: var(--fg);
+}
+
+.tabs-panels > div {
+  display: none;
+}
+
+.tabs-panels > div > [data-copy] + [data-copy] {
+  margin-block-start: var(--s-3);
+}
+
+.tabs > .t-script:checked ~ .tabs-panels > .p-script,
+.tabs > .t-brew:checked ~ .tabs-panels > .p-brew,
+.tabs > .t-scoop:checked ~ .tabs-panels > .p-scoop,
+.tabs > .t-cargo:checked ~ .tabs-panels > .p-cargo,
+.tabs > .t-binstall:checked ~ .tabs-panels > .p-binstall {
+  display: block;
+}
+
+.tabs > .t-script:checked ~ .tabs-strip > label[for='t-script'],
+.tabs > .t-brew:checked ~ .tabs-strip > label[for='t-brew'],
+.tabs > .t-scoop:checked ~ .tabs-strip > label[for='t-scoop'],
+.tabs > .t-cargo:checked ~ .tabs-strip > label[for='t-cargo'],
+.tabs > .t-binstall:checked ~ .tabs-strip > label[for='t-binstall'] {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+
+.tabs > .t-script:focus-visible ~ .tabs-strip > label[for='t-script'],
+.tabs > .t-brew:focus-visible ~ .tabs-strip > label[for='t-brew'],
+.tabs > .t-scoop:focus-visible ~ .tabs-strip > label[for='t-scoop'],
+.tabs > .t-cargo:focus-visible ~ .tabs-strip > label[for='t-cargo'],
+.tabs > .t-binstall:focus-visible ~ .tabs-strip > label[for='t-binstall'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Contents ----------------------------------------------------------- */
+
+.contents-label {
+  margin: 0 0 var(--s-3);
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--muted);
+}
+
+.contents ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contents li {
+  margin: 0;
+}
+
+.contents a {
+  display: block;
+  padding: 0.28rem var(--s-3);
+  border-inline-start: 2px solid var(--border);
+  color: var(--muted);
+  text-decoration: none;
+  font: 400 var(--step--1) / 1.4 var(--font-mono);
+  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+
+.contents a:hover {
+  color: var(--fg);
+  border-inline-start-color: var(--accent);
+}
+
+.contents .d3 a {
+  padding-inline-start: var(--s-5);
+  font-size: var(--step--2);
+}
+
+/* The rail sits beside the reading column on wide screens and above it
+ * otherwise, so a narrow viewport still reads top to bottom. */
+.with-rail {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.with-rail > .contents {
+  margin-block-start: var(--s-5);
+}
+
+/* Beside a rail there is no room to centre the reading column, and a ragged
+ * left edge between prose and the tables it explains reads as a mistake. */
+.with-rail .prose {
+  grid-template-columns:
+    [full-start wide-start text-start] min(var(--measure), 100%) [text-end]
+    minmax(0, 1fr) [wide-end full-end];
+}
+
+@media (min-width: 68rem) {
+  .with-rail {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: var(--s-7);
+    align-items: start;
+  }
+
+  .with-rail > .contents {
+    position: sticky;
+    top: 5rem;
+    margin-block-start: var(--s-6);
+    max-height: calc(100dvh - 7rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ---- Dashboard key table -------------------------------------------------------- */
+
+.page-dashboard td:nth-child(2) {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.page-dashboard td:nth-child(2) code {
+  display: inline-block;
+  white-space: nowrap;
+  min-width: 1.7em;
+  margin-inline-end: 0.2rem;
+  padding: 0.12em 0.42em;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--fg);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.page-dashboard td:last-child {
+  color: var(--muted);
+}
+
+/* ---- Changelog timeline ------------------------------------------------- */
+
+.page-changelog .prose {
+  padding-inline-start: 2.5rem;
+  border-inline-start: 1px solid var(--border);
+}
+
+.page-changelog .prose > h1 {
+  margin-inline-start: -2.5rem;
+}
+
+.page-changelog .prose > h2 {
+  position: relative;
+  font-size: var(--step-1);
+  font-weight: 500;
+  color: var(--muted);
+  margin-block-start: var(--s-8);
+}
+
+.page-changelog .prose > h2::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-2.5rem - 6px);
+  top: 0.5em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+}
+
+.page-changelog .prose > h2 > a:first-child {
+  display: inline-block;
+  margin-inline-end: 0.4em;
+  padding: 0.1em 0.6em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--fg);
+  font: 600 0.92em / 1.5 var(--font-mono);
+  text-decoration: none;
+}
+
+.page-changelog .prose > h2 > a:first-child:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.page-changelog .prose > h3 {
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--muted);
+  margin-block-start: var(--s-5);
+}
+
+/* ---- Class chips -------------------------------------------------------- */
+/* The dashboard's five categories, in the colour it draws each one. Used in
+ * the hero, the category table, and the gallery's key chips. */
+
+.cls {
+  --c: var(--tui-muted);
+  display: inline-block;
+  padding: 0.18em 0.5em;
+  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+  color: var(--c);
+  font: 600 var(--step--2) / 1.2 var(--font-mono);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.cls-local {
+  --c: var(--tui-green);
+}
+
+.cls-cloud {
+  --c: var(--tui-magenta);
+}
+
+.cls-free {
+  --c: var(--tui-blue);
+}
+
+.cls-paid {
+  --c: var(--tui-yellow);
+}
+
+.cls-unknown {
+  --c: var(--tui-red);
+}
+
+.cls-key {
+  --c: var(--tui-cyan);
+}
+
+:not(pre) > code.cls {
+  border-color: color-mix(in srgb, var(--c) 45%, transparent);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+  color: var(--c);
+  font-weight: 600;
+}
+
+.classes table {
+  font-size: var(--step--1);
+}
+
+.classes td:first-child {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.classes td:last-child {
+  color: var(--muted);
+}
+
+.pullquote {
+  margin: var(--s-6) 0 0;
+  padding: 0;
+  border: 0;
+  max-width: var(--measure);
+  font: 500 var(--step-2) / var(--leading-snug) var(--font-mono);
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.pullquote b {
+  color: var(--tui-red);
+  font-weight: inherit;
+}
+
+/* ---- The promise ------------------------------------------------------- */
+/* The README's privacy list, numbered like a ledger. Every line is the
+ * document's; the site only counts them. */
+
+.promise {
+  counter-reset: promise;
+}
+
+.promise ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.promise li {
+  counter-increment: promise;
+  position: relative;
+  margin: 0;
+  padding: var(--s-4) 0 var(--s-4) 4rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.promise li::before {
+  content: counter(promise, decimal-leading-zero);
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(var(--s-4) + 0.3em);
+  font: 500 var(--step--2) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.promise li strong {
+  color: var(--fg);
+}
+
+/* Eight items, then a toggle for the rest: a hidden checkbox and a label, so
+ * it needs no script, and with no stylesheet at all every item simply shows. */
+.promise-k {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.promise li:nth-child(n + 9) {
+  display: none;
+}
+
+.promise-k:checked ~ .prose li:nth-child(n + 9) {
+  display: block;
+}
+
+.promise-more {
+  display: inline-block;
+  margin-block-start: var(--s-4);
+  color: var(--accent);
+  font: 500 var(--step--1) / 1 var(--font-mono);
+  cursor: pointer;
+}
+
+.promise-more .fewer,
+.promise-k:checked ~ .promise-more .more {
+  display: none;
+}
+
+.promise-k:checked ~ .promise-more .fewer {
+  display: inline;
+}
+
+.promise-k:focus-visible ~ .promise-more {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Callout ------------------------------------------------------------ */
+
+.callout {
+  display: grid;
+  gap: var(--s-3);
+  max-width: var(--measure);
+  padding: var(--s-5) var(--s-6);
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--tui-red);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.callout p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.callout p:first-child {
+  color: var(--fg);
+}
+
+/* ---- Routing pair ------------------------------------------------------- */
+
+.routing {
+  display: grid;
+  gap: var(--s-6);
+  align-items: start;
+}
+
+.routing .ask {
+  margin: 0 0 var(--s-5);
+  font: 600 var(--step-4) / var(--leading-tight) var(--font-mono);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.routing .ask q {
+  quotes: '\201C' '\201D';
+  color: var(--accent);
+}
+
+@media (min-width: 62rem) {
+  .routing {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--s-7);
+  }
+}
+
+/* ---- Gallery captions --------------------------------------------------- */
+
+.gallery figcaption b {
+  color: var(--fg);
+  font: 600 var(--step--1) / 1.4 var(--font-mono);
+  margin-inline-end: var(--s-2);
+}
+
+.gallery figcaption .cls {
+  margin-inline-end: var(--s-2);
+  vertical-align: 0.1em;
+}
+
+.gallery figcaption .alt {
+  display: block;
+  margin-block-start: var(--s-1);
+  font-size: var(--step--2);
+  color: var(--tui-dim);
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+
+.site-footer {
+  margin-block-start: var(--s-8);
+  border-top: 1px solid var(--border);
+  padding-block: var(--s-6) var(--s-7);
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+
+.site-footer .bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4) var(--s-6);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+}
+
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+.site-footer .release {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+}
+
+/* ---- Stacked documents -------------------------------------------------- */
+/* A page that renders several README sections in a row: each keeps its own
+ * grid, and the seam between two is a section's worth of space. */
+
+.stack {
+  display: grid;
+  gap: var(--s-8);
+  min-width: 0;
+}
+
+.stack > section > h2 {
+  margin: 0 0 var(--s-5);
+}

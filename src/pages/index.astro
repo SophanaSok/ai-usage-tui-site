@@ -1,0 +1,279 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Command from '../components/Command.astro';
+import Frame from '../components/Frame.astro';
+import Term from '../components/Term.astro';
+import { TEXT, assetSize, assetUrl, quote, sliceSection, sourceDir } from '../lib/source';
+
+const release = (await getEntry('release', 'current'))!.data;
+const features = (await getEntry('docs', 'features'))!;
+const { Content: Features } = await render(features);
+const { Content: Classes } = await render((await getEntry('docs', 'classes'))!);
+const { Content: Promise } = await render((await getEntry('docs', 'promise'))!);
+// The Cursor argument lives on its own page; the home page shows the sentence
+// that page describes itself with.
+const cursor = (await getEntry('docs', 'cursor'))!;
+// The routing section's opening paragraphs, without the panel description
+// that the screenshot beside them already shows.
+const { Content: Routing } = await render((await getEntry('docs', 'routing-lede'))!);
+
+const dir = sourceDir();
+const readme = readFileSync(resolve(dir, TEXT.readme), 'utf8');
+const quickstart = sliceSection(readme, 'Quick start');
+const install = sliceSection(readme, 'Installation');
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = (p: string) => `${base}/${p}`;
+const alt = (file: string) => release.images.find((i) => i.file === file)?.alt ?? '';
+const shot = (file: string) => ({ src: assetUrl(base, file), alt: alt(file), ...assetSize(dir, file) });
+const gallery = (file: string) => release.gallery.find((g) => g.file === file);
+
+// Every phrase in the hint line is verbatim in a trusted file, so the strip
+// states nothing the documents do not.
+const hints = [
+  quote(readme, 'Live TUI or JSON/CSV', TEXT.readme),
+  quote(readme, 'Everything is read locally, in place.', TEXT.readme),
+  quote(readme, 'No account, no telemetry', TEXT.readme),
+  quote(readme, release.platforms, TEXT.readme),
+];
+
+// Section headings are either a heading the README already uses or a sentence
+// quoted out of it, so the page adds no claim of its own.
+const ask = quote(readme, 'was the expensive model worth it', TEXT.readme);
+const promise = quote(readme, 'Privacy and network behavior', TEXT.readme);
+const whatItShows = quote(readme, 'What it shows', TEXT.readme);
+const cursorHeading = quote(readme, 'Why there is no Cursor collector', TEXT.readme);
+const routingHeading = quote(readme, 'Model-routing analytics', TEXT.readme);
+
+
+---
+<Base title="Home" path="" page="home">
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-title">
+          <p class="eyebrow">
+            <span class="chip chip-accent">{release.tag}</span>
+            <time datetime={release.date}>{release.date}</time>
+            <span class="chip">{release.license}</span>
+          </p>
+          <h1>ai-usage-<wbr /><span class="tui">tui</span></h1>
+        </div>
+        <div class="hero-aside">
+          <p class="lede">{release.description}</p>
+          <div class="actions">
+            <a class="btn btn-primary" href={url('install/')}>Install</a>
+            <a class="btn" href={release.repository}>Source on GitHub &#8594;</a>
+          </div>
+        </div>
+      </div>
+
+      <Term caption={release.provenance} />
+
+      <ul class="hintline">
+        {hints.map((hint) => <li><b>{hint}</b></li>)}
+      </ul>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="install">Install</h2></div>
+      <div class="tabs">
+        <input class="t-script" type="radio" name="install" id="t-script" checked />
+        <input class="t-brew" type="radio" name="install" id="t-brew" />
+        <input class="t-scoop" type="radio" name="install" id="t-scoop" />
+        <input class="t-cargo" type="radio" name="install" id="t-cargo" />
+        <input class="t-binstall" type="radio" name="install" id="t-binstall" />
+        <div class="tabs-strip">
+          <label for="t-script">script</label>
+          <label for="t-brew">Homebrew</label>
+          <label for="t-scoop">Scoop</label>
+          <label for="t-cargo">cargo</label>
+          <label for="t-binstall">binstall</label>
+        </div>
+        <div class="tabs-panels">
+          <div class="p-script">
+            <Command command="curl -fsSL https://raw.githubusercontent.com/SophanaSok/ai-usage-tui/main/scripts/install.sh | sh" source={quickstart} from={TEXT.readme} />
+          </div>
+          <div class="p-brew"><Command command="brew install sophanasok/tap/ai-usage-tui" source={install} from={TEXT.readme} /></div>
+          <div class="p-scoop">
+            <Command command="scoop bucket add sophanasok https://github.com/SophanaSok/scoop-bucket" source={install} from={TEXT.readme} />
+            <Command command="scoop install ai-usage-tui" source={install} from={TEXT.readme} />
+          </div>
+          <div class="p-cargo"><Command command="cargo install ai-usage-tui --locked" source={install} from={TEXT.readme} /></div>
+          <div class="p-binstall"><Command command="cargo binstall ai-usage-tui" source={install} from={TEXT.readme} /></div>
+        </div>
+      </div>
+      <p class="note">Also on <a href={url('install/')}>the release page</a> as prebuilt binaries, <code>.deb</code> and <code>.rpm</code> packages, a <code>PKGBUILD</code> and a Chocolatey package.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="privacy">{promise}</h2></div>
+      <div class="promise">
+        <input class="promise-k" type="checkbox" id="promise-all" />
+        <div class="prose prose-flush"><Promise /></div>
+        <label class="promise-more" for="promise-all"><span class="more">Every item &#8595;</span><span class="fewer">Fewer &#8593;</span></label>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="what-it-shows">{whatItShows}</h2></div>
+      <div class="features"><Features /></div>
+      <div class="classes prose prose-flush"><Classes /></div>
+      <p class="pullquote"><b>{features.data.description}</b></p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="routing">{routingHeading}</h2></div>
+      <div class="routing">
+        <div>
+          <p class="ask"><q>{ask}</q></p>
+          <div class="prose prose-flush"><Routing /></div>
+          <p class="note"><a href={url('routing/')}>How the routing panel is fed &#8594;</a></p>
+        </div>
+        <Frame {...shot('docs/assets/routing.png')} label="t" caption={gallery('docs/assets/routing.png')?.blurb} />
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="demo">Watch it</h2></div>
+      <Frame {...shot('docs/assets/demo.gif')} label="ai-usage-tui" caption={alt('docs/assets/demo.gif')} />
+      <p class="note">{release.provenance}</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="panels">Every panel</h2></div>
+      <div class="gallery">
+        {release.gallery.map((panel) => (
+          <figure>
+            <div class="frame">
+              <div class="frame-bar"><span class="label">{panel.key ?? 'ai-usage-tui'}</span></div>
+              <div class="frame-body">
+                <img src={assetUrl(base, panel.file)} alt={panel.alt} {...assetSize(dir, panel.file)} loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <figcaption>
+              <b>{panel.title}</b>
+              {panel.key && <span class="cls cls-key">{panel.key}</span>}
+              {panel.blurb}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <p class="note">{release.provenance}</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="cursor">{cursorHeading}</h2></div>
+      <div class="callout">
+        <p>{cursor.data.description}</p>
+        <p><a href={url('why-no-cursor/')}>The whole argument &#8594;</a></p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2 id="links">Links</h2></div>
+      <ul class="links">
+        <li><a href={url('install/')}>Install</a></li>
+        <li><a href={url('sources/')}>Data sources</a></li>
+        <li><a href={url('dashboard/')}>Dashboard</a></li>
+        <li><a href={url('routing/')}>Routing</a></li>
+        <li><a href={url('output/')}>Output and config</a></li>
+        <li><a href={url('privacy/')}>Privacy</a></li>
+        <li><a href={url('changelog/')}>Changelog</a></li>
+        <li><a href={release.repository}>Source on GitHub</a></li>
+        <li><a href={`https://crates.io/crates/${release.name}`}>crates.io</a></li>
+        <li><a href={`${release.repository}/releases`}>Releases</a></li>
+        <li><a href={`${release.repository}/blob/${release.tag}/docs/provider-support.md`}>Provider support</a></li>
+        <li><a href={`${release.repository}/blob/${release.tag}/docs/omarchy.md`}>Omarchy</a></li>
+        <li><a href={`${release.repository}/blob/${release.tag}/docs/architecture.md`}>Architecture</a></li>
+        <li><a href={`${release.repository}/blob/${release.tag}/docs/roadmap.md`}>Roadmap</a></li>
+        <li><a href={`${release.repository}/blob/${release.tag}/docs/what-a-max-subscription-bought.md`}>What a Max subscription bought</a></li>
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<script is:inline>
+  (() => {
+    const term = document.getElementById('term');
+    if (!term) return;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // The tiles count up to the figure they show, then show exactly it again.
+    if (!still) {
+      for (const el of term.querySelectorAll('[data-count]')) {
+        const target = Number(el.dataset.count);
+        const unit = el.dataset.unit || '';
+        const final = el.textContent;
+        const decimals = final.includes('.') ? 1 : 0;
+        const t0 = performance.now();
+        const step = (now) => {
+          const p = Math.min(1, (now - t0 - 500) / 900);
+          if (p < 0) return requestAnimationFrame(step);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = (target * eased).toFixed(decimals) + unit;
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = final;
+        };
+        requestAnimationFrame(step);
+      }
+    }
+
+    // The right-hand pane cycles the way the demo does, until someone takes
+    // the keys: a hover, a focus, a click on the footer, or a keypress.
+    const panes = ['models', 'routing', 'limits', 'burn'];
+    const show = (pane) => {
+      const radio = document.getElementById(`k-${pane}`);
+      if (radio) radio.checked = true;
+    };
+    let at = 0;
+    let timer = null;
+    let inView = false;
+    const stop = () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    };
+    const start = () => {
+      if (still || timer || !inView) return;
+      timer = setInterval(() => {
+        if (term.matches(':hover, :focus-within')) return;
+        at = (at + 1) % panes.length;
+        show(panes[at]);
+      }, 4500);
+    };
+    term.addEventListener('change', stop);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView) start();
+        else stop();
+      }).observe(term);
+    } else {
+      inView = true;
+      start();
+    }
+    document.addEventListener('keydown', (e) => {
+      if (!inView || e.altKey || e.ctrlKey || e.metaKey) return;
+      const target = e.target;
+      if (target && /^(input|textarea|select)$/i.test(target.tagName)) return;
+      const key = term.querySelector(`label[data-key="${e.key}"]`);
+      if (!key) return;
+      stop();
+      show(key.htmlFor.slice(2));
+    });
+
+    // The clock is the one live thing: the local time, where the still shows the
+    // screenshot's.
+    const clock = term.querySelector('[data-clock]');
+    if (clock && !still) {
+      const tick = () => {
+        clock.textContent = new Date().toTimeString().slice(0, 8);
+      };
+      tick();
+      setInterval(tick, 1000);
+    }
+  })();
+</script>

@@ -1,0 +1,27 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+
+/* The README's quick start, then every install method, as one page with a
+ * contents rail rather than tabs: the first thing anyone does on an install
+ * page is find-in-page for their package manager, and hidden panels break
+ * that. */
+const quickstart = (await getEntry('docs', 'quickstart'))!;
+const install = (await getEntry('docs', 'install'))!;
+const first = await render(quickstart);
+const second = await render(install);
+const headings = [
+  ...first.headings.filter((h) => h.depth === 1).map((h) => ({ ...h, depth: 2 })),
+  ...second.headings.filter((h) => h.depth <= 2).map((h) => ({ ...h, depth: h.depth + 1 })),
+];
+---
+<Base title="Install" path="install/" page="install" description={install.data.description}>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={3} label="Methods" />
+    <div class="stack">
+      <article class="prose"><first.Content /></article>
+      <article class="prose"><second.Content /></article>
+    </div>
+  </div>
+</Base>

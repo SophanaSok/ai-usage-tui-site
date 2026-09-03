@@ -1,0 +1,108 @@
+/* Design tokens.
+ *
+ * The site is dark only: the hero is a terminal on a near-black ground, and a
+ * light page around it would read as a screenshot pasted onto paper. The
+ * `--tui-*` colours are the dashboard's own, from `src/model.rs`,
+ * `src/ui/theme.rs` and `src/ui/svg.rs::color_to_hex` in the checkout. They are
+ * written here as literals on purpose: the page's colour is a design decision
+ * about this site, not a claim about the product. `npm run check` reads the
+ * modules and fails when the two stop agreeing, so a drift is noticed without
+ * a build ever painting a colour it did not choose.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* The dashboard's own colours. */
+  --tui-black: #0a1014;
+  --tui-header: #0a1218;
+  --tui-panel: #121c25;
+  --tui-border: #304854;
+  --tui-selected: #253943;
+  --tui-fg: #d8e2eb;
+  --tui-muted: #7d91a0;
+  --tui-dim: #4a5a68;
+  --tui-cyan: #45d3ff;
+  --tui-green: #74eb98;
+  --tui-blue: #45a0ff;
+  --tui-yellow: #ffcd5c;
+  --tui-magenta: #c289ff;
+  --tui-red: #ff6969;
+
+  /* The page: navy a step above the terminal, so the hero sits in the page
+   * rather than on it. */
+  --bg: #0d1620;
+  --surface: #121c25;
+  --surface-2: #17232e;
+  --fg: #e6edf3;
+  --muted: #8ea0ae;
+  --border: #223240;
+  --accent: var(--tui-cyan);
+  --accent-ink: var(--tui-black);
+
+  --mat: #0a1014;
+  --frame-line: #304854;
+  --shadow-ink: rgb(0 0 0 / 0.55);
+  --shadow-ink-soft: rgb(0 0 0 / 0.3);
+
+  /* Type. The dashboard draws in a cell grid, so the mono face carries the
+   * chrome — headings, eyebrows, keys, captions, commands, the hero — and the
+   * text face carries only rendered prose. JetBrains Mono leads because the
+   * screenshot renderer's own stack does; nothing is downloaded for it. */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'SFMono-Regular', Menlo, Consolas,
+    'DejaVu Sans Mono', monospace;
+  --font-text: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --step--2: 0.75rem;
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: clamp(1.25rem, 0.4vw + 1.15rem, 1.4rem);
+  --step-3: clamp(1.5rem, 1vw + 1.25rem, 1.9rem);
+  --step-4: clamp(2rem, 2.6vw + 1.35rem, 3.1rem);
+  --step-5: clamp(2.6rem, 5vw + 1.3rem, 4.8rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading: 1.65;
+  --tracking-eyebrow: 0.14em;
+
+  /* Space. */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+  --s-9: 7rem;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  --shadow: 0 1px 2px var(--shadow-ink-soft), 0 14px 34px -14px var(--shadow-ink);
+  --shadow-sm: 0 1px 2px var(--shadow-ink-soft);
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --fast: 120ms;
+  --slow: 260ms;
+
+  /* Layout. */
+  --gutter: 1.5rem;
+  --measure: 72ch;
+  --wide: 8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
