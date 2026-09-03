@@ -632,6 +632,12 @@
     align-items: start;
   }
 
+  /* A document with one heading gets no rail, and its article must not fall
+   * into the rail's column. */
+  .with-rail > :not(.contents):first-child {
+    grid-column: 1 / -1;
+  }
+
   .with-rail > .contents {
     position: sticky;
     top: 5rem;
