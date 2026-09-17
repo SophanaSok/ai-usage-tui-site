@@ -144,6 +144,7 @@ const DOCS: Doc[] = [
   // README gives them, so the block that holds them is cut here.
   { id: 'dashboard', title: 'Dashboard', file: TEXT.readme, slice: { heading: 'Interactive dashboard', keepHeading: true, promote: true, until: '<details>' }, lede: 'The main view combines summary metrics' },
   { id: 'limits', title: 'Subscription limits', file: TEXT.readme, slice: { heading: 'Interactive dashboard', from: '### Subscription limits', keepHeading: true, promote: true }, lede: 'The `l` panel shows each subscription' },
+  { id: 'agents', title: 'Ask an LLM about your usage', file: TEXT.readme, slice: { heading: 'Ask an LLM about your usage', keepHeading: true, promote: true }, lede: 'The dashboard is for you.' },
   { id: 'output', title: 'Non-interactive output', file: TEXT.readme, slice: { heading: 'Non-interactive output', keepHeading: true, promote: true }, lede: '`--json` and `--csv` imply `--once`' },
   { id: 'config', title: 'Configuration', file: TEXT.readme, slice: { heading: 'Configuration', keepHeading: true, promote: true }, lede: 'The optional TOML file defaults to' },
   { id: 'budgets', title: 'Budget checks', file: TEXT.readme, slice: { heading: 'Budget checks', keepHeading: true, promote: true }, lede: 'Configured budgets appear in the TUI' },
