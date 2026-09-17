@@ -24,7 +24,7 @@ import {
   sourceDir,
   writtenOn,
 } from '../src/lib/source.ts';
-import { PAGES } from '../src/lib/pages.ts';
+import { GUIDES, PAGES } from '../src/lib/pages.ts';
 import { DEMO, FOOTER, isDemo } from '../src/lib/demo.ts';
 
 const DIST = resolve('dist');
@@ -220,6 +220,35 @@ test('every indexed page points its canonical at itself, and only those do', () 
     assert.ok(canonical, `${rel} has no canonical`);
     assert.equal(new URL(canonical).pathname, path, `${rel}: canonical points elsewhere`);
     assert.equal(meta(html, 'robots'), undefined, `${rel} is indexed but carries a robots directive`);
+  }
+});
+
+/* ---- The agent guides ---------------------------------------------------- */
+
+test('the agent guides are the ones the binary prints, and each can be reached', () => {
+  // The reading guide is what the bare flag prints, and its closing section is
+  // where the binary lists the other topics. That list is the app's, so the
+  // site's table is held to it: a topic added upstream fails here until it has
+  // a page, and a page for a topic the flag does not take is refused.
+  const reading = readFileSync(join(sourceDir(), TEXT.guideRead), 'utf8');
+  const named = new Set([...reading.matchAll(/`ai-usage-tui --agent-guide ([a-z]+)`/g)].map((m) => m[1]));
+  assert.ok(named.size >= 3, `the reading guide names only ${[...named]}`);
+  const served = new Set(GUIDES.map((g) => g.topic).filter((topic) => topic !== 'read'));
+  assert.deepEqual([...served].sort(), [...named].sort(), 'GUIDES and the topics --agent-guide lists disagree');
+
+  const agents = readFileSync(join(DIST, 'agents', 'index.html'), 'utf8');
+  for (const guide of GUIDES) {
+    const path = `agents/${guide.topic}/`;
+    assert.ok(PAGES.some((p) => p.path === path), `${path} is not in PAGES, so not in the sitemap`);
+    const file = join(DIST, 'agents', guide.topic, 'index.html');
+    assert.ok(existsSync(file), `${path} was not built`);
+    // Nothing else links to a guide, so the Agents page has to.
+    assert.ok(agents.includes(`href="${BASE}/${path}"`), `the Agents page does not link to ${path}`);
+    // The link's label is the command, and the page it goes to says the same
+    // command prints it: the guide's own opening, not the site's claim.
+    const html = decode(readFileSync(file, 'utf8'));
+    assert.ok(agents.includes(`<code>${guide.command}</code>`), `no link labelled ${guide.command}`);
+    assert.ok(html.includes(`ai-usage-tui ${guide.command}`), `${path} never names ${guide.command}`);
   }
 });
 

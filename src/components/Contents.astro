@@ -3,7 +3,8 @@ import type { MarkdownHeading } from 'astro';
 
 /* The reader's own contents pane, borrowed. Every entry comes from the
  * headings Astro extracted from the document rendered on this page, so a
- * fragment here always names an id that is actually on it. */
+ * fragment here always names an id that is actually on it. The slot takes a
+ * second list for the same pane: a page's siblings, under their own label. */
 interface Props {
   headings: MarkdownHeading[];
   /** Deepest heading level to list. */
@@ -15,14 +16,19 @@ const { headings, depth = 3, layout = 'rail', label = 'Contents' } = Astro.props
 const items = headings.filter((h) => h.depth > 1 && h.depth <= depth);
 ---
 {
-  items.length > 1 && (
+  (items.length > 1 || Astro.slots.has('default')) && (
     <nav class={`contents ${layout === 'strip' ? 'contents-strip' : ''}`} aria-label={label}>
-      <p class="contents-label">{label}</p>
-      <ol>
-        {items.map((h) => (
-          <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>
-        ))}
-      </ol>
+      {items.length > 0 && (
+        <>
+          <p class="contents-label">{label}</p>
+          <ol>
+            {items.map((h) => (
+              <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ol>
+        </>
+      )}
+      <slot />
     </nav>
   )
 }

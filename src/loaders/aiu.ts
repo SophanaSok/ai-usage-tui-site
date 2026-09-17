@@ -164,6 +164,13 @@ const DOCS: Doc[] = [
   // The launch write-up, whole. Its lede is the one sentence that puts the
   // two sides of the measurement next to each other.
   { id: 'measurement', title: 'What a Max subscription bought', file: TEXT.measurement, lede: 'That is a ratio a reader can form an opinion about', dated: true },
+  // What `--agent-guide [TOPIC]` prints, whole. The setup guide's opening
+  // paragraph sets a word in italics, which the description check does not
+  // flatten, so it is described by the paragraph after it.
+  { id: 'guide-read', title: 'Reading ai-usage-tui from an agent', file: TEXT.guideRead, lede: 'You are reading this because someone asked you about their AI token usage' },
+  { id: 'guide-setup', title: 'Setting ai-usage-tui up from an agent', file: TEXT.guideSetup, lede: 'The tool never edits another program' },
+  { id: 'guide-recipes', title: 'Building on ai-usage-tui from an agent', file: TEXT.guideRecipes, lede: 'You are reading this because someone asked you to build something' },
+  { id: 'guide-extend', title: 'Extending ai-usage-tui from an agent', file: TEXT.guideExtend, lede: 'You are reading this because someone wants the tool to cover' },
 ];
 
 /** The documents the pages render, each with `rendered` so `render(entry)` works. */

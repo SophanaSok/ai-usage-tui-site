@@ -60,7 +60,7 @@
   color: var(--fg);
 }
 
-.site-nav a[aria-current='page'] {
+.site-nav a[aria-current] {
   color: var(--fg);
 }
 
@@ -597,6 +597,24 @@
 }
 
 .contents a:hover {
+  color: var(--fg);
+  border-inline-start-color: var(--accent);
+}
+
+/* A second list in the same pane, and the entry for the page being read. */
+.contents-more {
+  margin-block-start: var(--s-5);
+}
+
+.contents a code {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.contents a[aria-current='page'] {
   color: var(--fg);
   border-inline-start-color: var(--accent);
 }

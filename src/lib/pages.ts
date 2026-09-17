@@ -23,6 +23,13 @@ export const PAGES: Page[] = [
   // skill and the AGENTS snippet. Beside Output because it is output, for a
   // different reader.
   { path: 'agents/', label: 'Agents', nav: true },
+  // The guides `--agent-guide [TOPIC]` prints, one page each. Reached from the
+  // Agents page's rail, not from the header: they are one subject, and the
+  // header already names it.
+  { path: 'agents/read/', label: 'Agent guide: reading', nav: false },
+  { path: 'agents/setup/', label: 'Agent guide: setup', nav: false },
+  { path: 'agents/recipes/', label: 'Agent guide: recipes', nav: false },
+  { path: 'agents/extend/', label: 'Agent guide: extending', nav: false },
   { path: 'privacy/', label: 'Privacy', nav: true },
   // The launch write-up. One piece, so the entry is the piece; a second
   // one makes this an index.
@@ -31,4 +38,22 @@ export const PAGES: Page[] = [
   // Reached from the home page's callout, not from the header: it argues a
   // point about the product rather than documenting part of it.
   { path: 'why-no-cursor/', label: 'Why there is no Cursor collector', nav: false },
+];
+
+/**
+ * The agent guides: the route each is served at, the `docs` entry it renders,
+ * and the command that prints the same text. The command is the link's label,
+ * so the site says nothing about a guide that the flag does not.
+ */
+export interface Guide {
+  topic: string;
+  doc: string;
+  command: string;
+}
+
+export const GUIDES: Guide[] = [
+  { topic: 'read', doc: 'guide-read', command: '--agent-guide' },
+  { topic: 'setup', doc: 'guide-setup', command: '--agent-guide setup' },
+  { topic: 'recipes', doc: 'guide-recipes', command: '--agent-guide recipes' },
+  { topic: 'extend', doc: 'guide-extend', command: '--agent-guide extend' },
 ];

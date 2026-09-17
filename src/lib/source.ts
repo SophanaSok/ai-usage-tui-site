@@ -38,6 +38,14 @@ export const TEXT = {
   changelog: 'CHANGELOG.md',
   routing: 'docs/routing-analytics.md',
   measurement: 'docs/what-a-max-subscription-bought.md',
+  // The four guides the binary prints with `--agent-guide [TOPIC]`. They are
+  // compiled into it because no install channel ships `docs/`; the site
+  // renders the same files, so a reader without the binary can see what an
+  // agent with it is told.
+  guideRead: 'docs/agent-guide.md',
+  guideSetup: 'docs/agent-setup.md',
+  guideRecipes: 'docs/agent-recipes.md',
+  guideExtend: 'docs/agent-extend.md',
   fixture: 'scripts/make-demo-fixture.py',
   renderer: 'scripts/render-readme-screenshots.sh',
 } as const;
