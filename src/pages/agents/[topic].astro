@@ -1,0 +1,25 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Contents from '../../components/Contents.astro';
+import Guides from '../../components/Guides.astro';
+import { GUIDES, PAGES } from '../../lib/pages';
+
+/* One page per guide the binary prints with `--agent-guide [TOPIC]`, each
+ * rendered whole from the file that is compiled into it. */
+export function getStaticPaths() {
+  return GUIDES.map((guide) => ({ params: { topic: guide.topic }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+const path = `agents/${guide.topic}/`;
+const entry = (await getEntry('docs', guide.doc))!;
+const { Content, headings } = await render(entry);
+const title = PAGES.find((p) => p.path === path)!.label;
+---
+<Base title={title} path={path} page="guide" description={entry.data.description}>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={2}><Guides current={guide.topic} /></Contents>
+    <article class="prose"><Content /></article>
+  </div>
+</Base>

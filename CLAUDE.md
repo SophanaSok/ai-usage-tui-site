@@ -11,6 +11,8 @@ build time, from the app repository.
 - The trusted files are exactly those listed in `src/lib/source.ts`
   (`Cargo.toml` for the description, `CHANGELOG.md`, `README.md`,
   `docs/routing-analytics.md`, `docs/what-a-max-subscription-bought.md`, the
+  four guides `--agent-guide` prints (`docs/agent-guide.md`, `agent-setup.md`,
+  `agent-recipes.md`, `agent-extend.md`), the
   demo GIF and the eight panel screenshots
   under `docs/assets/`), plus two scripts trusted for one purpose: the hero's
   invented names are checked against `scripts/make-demo-fixture.py` and

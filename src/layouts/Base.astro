@@ -90,7 +90,7 @@ const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
         <a class="brand" href={url('')}><span class="mark" aria-hidden="true">AI</span>ai-usage-tui</a>
         <nav class="site-nav" aria-label="Sections">
           {nav.map(({ path: p, label }) => (
-            <a href={url(p)} aria-current={p === path ? 'page' : undefined}>{label}</a>
+            <a href={url(p)} aria-current={p === path ? 'page' : p && path.startsWith(p) ? 'true' : undefined}>{label}</a>
           ))}
           <a class="out" href={release.repository}>GitHub</a>
         </nav>

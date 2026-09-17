@@ -1,0 +1,21 @@
+---
+import { GUIDES } from '../lib/pages';
+
+/* The agent guides, for the contents pane of the Agents page and of each
+ * guide. A link's text is the command that prints the guide it goes to, so
+ * the list claims nothing: it is the flag's own vocabulary. */
+interface Props {
+  /** The guide this page is, so the pane can mark it. */
+  current?: string;
+}
+const { current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<p class="contents-label contents-more">Guides</p>
+<ol>
+  {GUIDES.map((g) => (
+    <li>
+      <a href={`${base}/agents/${g.topic}/`} aria-current={g.topic === current ? 'page' : undefined}><code>{g.command}</code></a>
+    </li>
+  ))}
+</ol>
