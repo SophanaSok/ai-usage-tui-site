@@ -182,14 +182,17 @@ test('every description is a trusted document’s own words', () => {
     .flatMap((md) => [plainText(flatten(md)), flatten(md).replace(/\s+/g, ' ')])
     .join('\n')
     .replace(/[“”]/g, '"')
-    .replace(/’/g, "'");
+    .replace(/’/g, "'")
+    .replace(/–/g, '--');
 
   for (const { rel, path, html } of builtPages()) {
     if (!path) continue;
     // A clamped description closes the clause it stopped at, or trails off;
     // neither punctuation mark is the document's, so neither is checked.
-    // The renderer curls quotes; the corpus and the stem are straightened the same way.
-    const stem = decode(meta(html, 'description')).replace(/[.…]$/, '').replace(/[“”]/g, '"').replace(/’/g, "'");
+    // The renderer curls quotes and turns a changelog's ` -- ` into an en dash; the corpus and
+    // the stem are straightened the same way. The dash was missed until a release's first entry
+    // had one, and the changelog page then described itself in words "no trusted file has".
+    const stem = decode(meta(html, 'description')).replace(/[.…]$/, '').replace(/[“”]/g, '"').replace(/’/g, "'").replace(/–/g, '--');
     assert.ok(corpus.includes(stem), `${rel} describes itself with words no trusted file has: ${stem}`);
   }
 });

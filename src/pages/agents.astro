@@ -1,0 +1,16 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contents from '../components/Contents.astro';
+
+/* The README's section for whatever is asked about the usage rather than
+ * shown it: the summary document, the skill, the AGENTS snippet. */
+const entry = (await getEntry('docs', 'agents'))!;
+const { Content, headings } = await render(entry);
+---
+<Base title="Agents" path="agents/" page="agents" description={entry.data.description}>
+  <div class="with-rail shell" data-copy>
+    <Contents headings={headings} depth={2} />
+    <article class="prose"><Content /></article>
+  </div>
+</Base>

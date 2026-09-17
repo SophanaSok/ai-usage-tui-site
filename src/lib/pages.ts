@@ -19,6 +19,10 @@ export const PAGES: Page[] = [
   { path: 'dashboard/', label: 'Dashboard', nav: true },
   { path: 'routing/', label: 'Routing', nav: true },
   { path: 'output/', label: 'Output', nav: true },
+  // The README's "Ask an LLM about your usage": the summary document, the
+  // skill and the AGENTS snippet. Beside Output because it is output, for a
+  // different reader.
+  { path: 'agents/', label: 'Agents', nav: true },
   { path: 'privacy/', label: 'Privacy', nav: true },
   // The launch write-up. One piece, so the entry is the piece; a second
   // one makes this an index.
