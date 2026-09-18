@@ -32,6 +32,9 @@ const F: Provenance = 'fixture';
 const N: Provenance = 'renderer';
 const I: Provenance = 'invented';
 
+/** The panes the hero draws, and so the tabs and keys that can be active. */
+export type Pane = 'models' | 'routing' | 'limits' | 'burn';
+
 /** The five categories, as the README's table spells them. */
 export const CLASSES = {
   local: s('LOCAL', R),
@@ -49,10 +52,47 @@ export const HEADER = {
   clock: s('14:07:22', I),
 };
 
-export const WARN = {
-  chip: s('WARN', I),
-  text: s('model:claude-opus-5 monthly/$3.96/$6.00 (66%)', I),
+/**
+ * The words that name a panel, registered once and shown twice: the tab row
+ * spells them out and the key line names the key that opens each.
+ */
+const WORDS = {
+  models: s('models', R),
+  budgets: s('budgets', R),
+  routing: s('routing', R),
+  projects: s('projects', R),
+  graph: s('graph', I),
+  burn: s('burn', R),
+  sessions: s('sessions', R),
+  limits: s('limits', R),
+} as const;
+
+export interface Tab {
+  word: DemoString;
+  /** The pane this tab shows, for the four the hero draws. */
+  pane?: Pane;
+}
+
+/** The dashboard's tab row, in its order. */
+export const TABS: Tab[] = [
+  { word: WORDS.models, pane: 'models' },
+  { word: WORDS.budgets },
+  { word: WORDS.routing, pane: 'routing' },
+  { word: WORDS.projects },
+  { word: WORDS.graph },
+  { word: WORDS.burn, pane: 'burn' },
+  { word: WORDS.sessions },
+  { word: WORDS.limits, pane: 'limits' },
+];
+
+/** The budget the demo data has already blown, as the header reports it. */
+export const ALERT = {
+  chip: s('EXCEEDED', I),
+  text: s('model:claude-opus-5 monthly/$6.02/$6.00 (100%)', I),
 };
+
+/** The paid total, shown twice: on the tile and under the token flow. */
+const paidCost = s('$9.7277', I);
 
 export interface Tile {
   cls: 'total' | ClassName;
@@ -66,11 +106,27 @@ export interface Tile {
 
 export const TILES: Tile[] = [
   { cls: 'total', title: s('TOTAL TOKENS', I), value: s('15.7M', I), count: 15.7, unit: 'M', sub: s('450 requests', I) },
-  { cls: 'local', title: CLASSES.local, value: s('3.3M', I), count: 3.3, unit: 'M', sub: s('3.3M tokens', I) },
-  { cls: 'free', title: CLASSES.free, value: s('3.4M', I), count: 3.4, unit: 'M', sub: s('3.4M tokens', I) },
-  { cls: 'paid', title: CLASSES.paid, value: s('5.5M', I), count: 5.5, unit: 'M', sub: s('$9.0188', I) },
-  { cls: 'cloud', title: CLASSES.cloud, value: s('3.5M', I), count: 3.5, unit: 'M', sub: s('3.5M tokens', I) },
-  { cls: 'unknown', title: CLASSES.unknown, value: s('0', I), count: 0, unit: '', sub: s('0 tokens', I) },
+  { cls: 'local', title: CLASSES.local, value: s('3.3M', I), count: 3.3, unit: 'M', sub: s('21% · 77 req', I) },
+  { cls: 'free', title: CLASSES.free, value: s('3.4M', I), count: 3.4, unit: 'M', sub: s('22% · 76 req', I) },
+  { cls: 'paid', title: CLASSES.paid, value: s('5.5M', I), count: 5.5, unit: 'M', sub: paidCost },
+  { cls: 'cloud', title: CLASSES.cloud, value: s('3.5M', I), count: 3.5, unit: 'M', sub: s('22% · 80 req', I) },
+  { cls: 'unknown', title: CLASSES.unknown, value: s('0', I), count: 0, unit: '', sub: s('—', I) },
+];
+
+export interface Segment {
+  cls: ClassName;
+  label: DemoString;
+  pct: DemoString;
+  /** The share itself, for the width of the segment. */
+  width: number;
+}
+
+/** The bar under the tiles: what each class spent of the whole. */
+export const SHARE: Segment[] = [
+  { cls: 'local', label: CLASSES.local, pct: s('21%', I), width: 21 },
+  { cls: 'free', label: CLASSES.free, pct: s('22%', I), width: 22 },
+  { cls: 'paid', label: CLASSES.paid, pct: s('35%', I), width: 35 },
+  { cls: 'cloud', label: CLASSES.cloud, pct: s('22%', I), width: 22 },
 ];
 
 export const FLOW = {
@@ -82,8 +138,38 @@ export const FLOW = {
     [s('CACHE READ', I), s('7.7M', I)],
     [s('CACHE WRITE', I), s('798.0K', I)],
   ],
-  cost: [s('EST. PAID COST', I), s('$9.0188', I)],
-  status: [s('PRICING STATUS', I), s('complete · 80 on quota', I)],
+  cost: [s('EST. PAID COST', I), paidCost],
+  status: [s('PRICING', I), s('complete · 80 on quota', I)],
+};
+
+/** The panel title the left column's gauges and the full pane share. */
+const limitsTitle = s('LIMITS', I);
+
+const pct42 = s('42%', I);
+const pct63 = s('63%', I);
+
+/**
+ * The gauges in the left column, under the token flow. The terminal truncates
+ * the second window to fit its column; the hero keeps the whole string and
+ * lets CSS do the truncating, so nothing invented is registered half-said.
+ */
+export const MINI_LIMITS = {
+  title: limitsTitle,
+  rows: [
+    { window: s('claude session (5-hour)', I), pct: 42, used: pct42 },
+    { window: s('claude weekly (all models)', I), pct: 63, used: pct63 },
+  ],
+};
+
+/**
+ * The sparkline in the left column: nine days as a share of the peak, drawn
+ * right-aligned the way the terminal draws them. The picture's footer line
+ * carries the render's own date, so the hero leaves it off rather than
+ * registering a date that goes quietly stale.
+ */
+export const SPARK = {
+  title: s('TOKENS PER DAY', I),
+  days: [67, 49, 45, 57, 36, 48, 66, 53, 99],
 };
 
 export interface ModelRow {
@@ -103,10 +189,11 @@ const onQuota = s('ON QUOTA', I);
 
 export const MODELS = {
   title: s('MODEL ACTIVITY', I),
+  count: s('9 models', I),
   head: [s('PROVIDER / MODEL', I), s('CLASS', I), s('TOKENS', I), s('COST', I), s('REQS', I)],
   rows: [
     { provider: s('anthropic', R), model: s('claude-opus-5', F), cls: 'paid', tokens: s('2.5M', I), cost: s('$6.0239', I), note: est, reqs: s('102', I) },
-    { provider: s('anthropic', R), model: s('claude-sonnet-5', F), cls: 'paid', tokens: s('2.3M', I), cost: s('$2.6632', I), note: est, reqs: s('88', I) },
+    { provider: s('anthropic', R), model: s('claude-sonnet-5', F), cls: 'paid', tokens: s('2.3M', I), cost: s('$3.3720', I), note: est, reqs: s('88', I) },
     { provider: s('opencode', F), model: s('lantern-flash-free', F), cls: 'free', tokens: s('2.0M', I), cost: CLASSES.free, reqs: s('43', I) },
     { provider: s('ollama-cloud', F), model: s('orbit-reasoner:cloud', F), cls: 'cloud', tokens: s('1.9M', I), cost: onQuota, reqs: s('43', I) },
     { provider: s('ollama', F), model: s('beacon-small-8b', F), cls: 'local', tokens: s('1.6M', I), cost: CLASSES.local, reqs: s('40', I) },
@@ -123,7 +210,7 @@ export const ROUTING = {
     share: s('28%', I),
     sentence: s('of 18 sessions used a pricier model than they opened with', I),
     rows: [
-      { from: s('claude-haiku-4-5', F), to: s('claude-opus-5', F), count: s('4 sessions', I), after: s('$1.23 after', I) },
+      { from: s('claude-haiku-4-5', F), to: s('claude-opus-5', F), count: s('4 sessions', I), after: s('$1.40 after', I) },
       { from: s('claude-sonnet-5', F), to: s('claude-opus-5', F), count: s('1 session', I), after: s('$0.41 after', I) },
     ],
   },
@@ -137,28 +224,37 @@ export const ROUTING = {
 };
 
 export const LIMITS = {
-  title: s('LIMITS', I),
-  head: [s('AGENT', I), s('WINDOW', I), s('USED', I), s('RESETS IN', I), s('TIER', I)],
+  title: limitsTitle,
+  head: [s('AGENT', I), s('WINDOW', I), s('USED', I), s('RESETS IN', I), s('AT', I), s('TIER', I)],
   rows: [
-    { agent: s('claude', F), window: s('Session (5-hour)', I), pct: 42, used: s('42%', I), resets: s('2h 08m', I) },
-    { agent: s('claude', F), window: s('Weekly (all models)', I), pct: 63, used: s('63%', I), resets: s('3d 3h', I) },
+    { agent: s('claude', F), window: s('Session (5-hour)', I), pct: 42, used: pct42, resets: s('2h 08m', I), at: s('Fri 13:35', I) },
+    { agent: s('claude', F), window: s('Weekly (all models)', I), pct: 63, used: pct63, resets: s('3d 3h', I), at: s('Mon 15:25', I) },
   ],
   foot: s('Claude Code · updated <1m ago', I),
 };
+
+export interface Budget {
+  scope: DemoString;
+  /** How long the budget lasts at this rate, or that it is already blown. */
+  left: DemoString;
+  remaining?: DemoString;
+  /** The budget is spent; the hero says so in red. */
+  over?: boolean;
+}
 
 export const BURN = {
   title: s('BURN RATE', I),
   window: s('(last 1h)', I),
   rows: [
     [s('tokens/min', I), s('13.2K', I)],
-    [s('requests', I), s('19', I)],
-    [s('spend', I), s('$0.92/hr', I)],
+    [s('requests', I), s('20', I)],
+    [s('spend', I), s('$0.99/hr', I)],
   ],
   budgets: [
-    { scope: s('global monthly', I), left: s('22h 12m left', I), remaining: s('($20.43 remaining)', I) },
-    { scope: s('provider:anthropic monthly', I), left: s('16h 46m left', I), remaining: s('($15.43 remaining)', I) },
-    { scope: s('model:claude-opus-5 monthly', I), left: s('2h 13m left', I), remaining: s('($2.04 remaining)', I) },
-  ],
+    { scope: s('global monthly', I), left: s('15h 29m left', I), remaining: s('($15.27 remaining)', I) },
+    { scope: s('provider:anthropic monthly', I), left: s('10h 25m left', I), remaining: s('($10.27 remaining)', I) },
+    { scope: s('model:claude-opus-5 monthly', I), left: s('already over', I), over: true },
+  ] as Budget[],
 };
 
 export interface FooterKey {
@@ -174,13 +270,13 @@ export interface FooterKey {
 export const FOOTER: FooterKey[] = [
   { key: s('1-4', I), word: s('range', R) },
   { key: s('r', R), word: s('refresh', R) },
-  { key: s('b', R), word: s('budgets', R), panel: true },
-  { key: s('t', R), word: s('routing', R), panel: true, pane: 'routing' },
-  { key: s('p', R), word: s('projects', R), panel: true },
-  { key: s('g', R), word: s('graph', I), panel: true },
-  { key: s('w', R), word: s('burn', R), panel: true, pane: 'burn' },
-  { key: s('s', R), word: s('sessions', R), panel: true },
-  { key: s('l', R), word: s('limits', R), panel: true, pane: 'limits' },
+  { key: s('b', R), word: WORDS.budgets, panel: true },
+  { key: s('t', R), word: WORDS.routing, panel: true, pane: 'routing' },
+  { key: s('p', R), word: WORDS.projects, panel: true },
+  { key: s('g', R), word: WORDS.graph, panel: true },
+  { key: s('w', R), word: WORDS.burn, panel: true, pane: 'burn' },
+  { key: s('s', R), word: WORDS.sessions, panel: true },
+  { key: s('l', R), word: WORDS.limits, panel: true, pane: 'limits' },
   { key: s('j/k', I), word: s('move', R) },
   { key: s('?', R), word: s('help', R) },
   { key: s('q', R), word: s('quit', R) },

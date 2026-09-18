@@ -4,13 +4,13 @@
  * A drawing of the TUI in HTML and CSS, from the same invented demo data as
  * the README screenshots. Every string it shows comes from `lib/demo.ts`, and
  * `checkDemo` holds the named ones to the files they are defined in. Without
- * JavaScript it is a still of the main view whose footer keys switch the
- * right-hand pane; the script on the home page adds the boot, the count-up,
- * the cycle and the clock. */
+ * JavaScript it is a still of the main view whose tabs and footer keys switch
+ * the right-hand pane; the script on the home page adds the boot, the
+ * count-up, the cycle and the clock. */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { TEXT, sourceDir } from '../lib/source';
-import { BURN, CLASSES, FLOW, FOOTER, HEADER, LIMITS, MODELS, ROUTING, TILES, WARN, checkDemo } from '../lib/demo';
+import { ALERT, BURN, CLASSES, FLOW, FOOTER, HEADER, LIMITS, MINI_LIMITS, MODELS, ROUTING, SHARE, SPARK, TABS, TILES, checkDemo } from '../lib/demo';
 import '../styles/term.css';
 
 interface Props {
@@ -40,9 +40,19 @@ const next = () => order++;
       <span class="term-clock" data-clock>{HEADER.clock.text}</span>
     </header>
 
+    <div class="term-tabs" style={`--i:${next()}`}>
+      {TABS.map((tab) =>
+        tab.pane ? (
+          <label class={`tab tab-${tab.pane}`} for={`k-${tab.pane}`}>{tab.word.text}</label>
+        ) : (
+          <span class="tab">{tab.word.text}</span>
+        ),
+      )}
+    </div>
+
     <p class="term-warn" style={`--i:${next()}`}>
-      <span class="term-warn-chip">{WARN.chip.text}</span>
-      <span>{WARN.text.text}</span>
+      <span class="term-warn-chip">{ALERT.chip.text}</span>
+      <span>{ALERT.text.text}</span>
     </p>
 
     <div class="term-tiles">
@@ -55,20 +65,50 @@ const next = () => order++;
       ))}
     </div>
 
+    <div class="term-share" style={`--i:${next()}`}>
+      {SHARE.map((seg) => (
+        <span class={`share share-${seg.cls}`} style={`--pct:${seg.width}`}>
+          <span>{seg.label.text}</span> <span>{seg.pct.text}</span>
+        </span>
+      ))}
+    </div>
+
     <div class="term-body">
-      <section class="pane pane-flow" style={`--i:${next()}`}>
-        <span class="pane-title">{FLOW.title.text}</span>
-        <dl class="flow">
-          {FLOW.rows.map(([label, value]) => (
-            <div><dt>{label.text}</dt><dd>{value.text}</dd></div>
-          ))}
-        </dl>
-        <p class="flow-cost"><span>{FLOW.cost[0].text}</span> <b>{FLOW.cost[1].text}</b></p>
-        <p class="flow-status"><span>{FLOW.status[0].text}</span> <span class="lit">{FLOW.status[1].text}</span></p>
-      </section>
+      <div class="term-left">
+        <section class="pane pane-flow" style={`--i:${next()}`}>
+          <span class="pane-title">{FLOW.title.text}</span>
+          <dl class="flow">
+            {FLOW.rows.map(([label, value]) => (
+              <div><dt>{label.text}</dt><dd>{value.text}</dd></div>
+            ))}
+          </dl>
+          <p class="flow-cost"><span>{FLOW.cost[0].text}</span> <b>{FLOW.cost[1].text}</b></p>
+          <p class="flow-status"><span>{FLOW.status[0].text}</span> <span class="lit">{FLOW.status[1].text}</span></p>
+        </section>
+
+        <section class="pane pane-mini-limits" style={`--i:${next()}`}>
+          <span class="pane-title">{MINI_LIMITS.title.text}</span>
+          <dl class="mini">
+            {MINI_LIMITS.rows.map((row) => (
+              <div>
+                <dt>{row.window.text}</dt>
+                <dd><span class="gauge" style={`--pct:${row.pct}`}></span> <b>{row.used.text}</b></dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section class="pane pane-spark" style={`--i:${next()}`}>
+          <span class="pane-title">{SPARK.title.text}</span>
+          <div class="spark" aria-hidden="true">
+            {SPARK.days.map((day) => <i style={`--h:${day}`}></i>)}
+          </div>
+        </section>
+      </div>
 
       <section class="pane pane-right pane-models" style={`--i:${next()}`}>
         <span class="pane-title">{MODELS.title.text}</span>
+        <span class="pane-count">{MODELS.count.text}</span>
         <div class="scroll">
         <table>
           <thead>
@@ -120,7 +160,7 @@ const next = () => order++;
         <span class="pane-title">{LIMITS.title.text}</span>
         <div class="scroll">
         <table class="limits-table">
-          <thead><tr><th>{LIMITS.head[0].text}</th><th>{LIMITS.head[1].text}</th><th></th><th>{LIMITS.head[2].text}</th><th>{LIMITS.head[3].text}</th><th>{LIMITS.head[4].text}</th></tr></thead>
+          <thead><tr><th>{LIMITS.head[0].text}</th><th>{LIMITS.head[1].text}</th><th></th><th>{LIMITS.head[2].text}</th><th>{LIMITS.head[3].text}</th><th>{LIMITS.head[4].text}</th><th>{LIMITS.head[5].text}</th></tr></thead>
           <tbody>
             {LIMITS.rows.map((row, i) => (
               <tr style={`--i:${i}`}>
@@ -129,6 +169,7 @@ const next = () => order++;
                 <td><span class="gauge" style={`--pct:${row.pct}`}></span></td>
                 <td>{row.used.text}</td>
                 <td class="dim">{row.resets.text}</td>
+                <td class="dim">{row.at.text}</td>
                 <td></td>
               </tr>
             ))}
@@ -147,7 +188,10 @@ const next = () => order++;
         </dl>
         <dl class="burn burn-budgets">
           {BURN.budgets.map((row) => (
-            <div><dt class="dim">{row.scope.text}</dt><dd class="c-yellow">{row.left.text} <span>{row.remaining.text}</span></dd></div>
+            <div>
+              <dt class="dim">{row.scope.text}</dt>
+              <dd class={row.over ? 'c-red' : 'c-yellow'}>{row.left.text}{row.remaining && <> <span>{row.remaining.text}</span></>}</dd>
+            </div>
           ))}
         </dl>
       </section>

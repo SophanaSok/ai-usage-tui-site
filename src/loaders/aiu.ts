@@ -142,7 +142,7 @@ const DOCS: Doc[] = [
   { id: 'cursor', title: 'Why there is no Cursor collector', file: TEXT.readme, slice: { heading: 'Why there is no Cursor collector' }, lede: 'Cursor is the agent most often asked about here' },
   // The screenshots are shown by the page itself, with the captions the
   // README gives them, so the block that holds them is cut here.
-  { id: 'dashboard', title: 'Dashboard', file: TEXT.readme, slice: { heading: 'Interactive dashboard', keepHeading: true, promote: true, until: '<details>' }, lede: 'The main view combines summary metrics' },
+  { id: 'dashboard', title: 'Dashboard', file: TEXT.readme, slice: { heading: 'Interactive dashboard', keepHeading: true, promote: true, until: '<details>' }, lede: 'The main view has a tile per category' },
   { id: 'limits', title: 'Subscription limits', file: TEXT.readme, slice: { heading: 'Interactive dashboard', from: '### Subscription limits', keepHeading: true, promote: true }, lede: 'The `l` panel shows each subscription' },
   { id: 'agents', title: 'Ask an LLM about your usage', file: TEXT.readme, slice: { heading: 'Ask an LLM about your usage', keepHeading: true, promote: true }, lede: 'The dashboard is for you.' },
   { id: 'output', title: 'Non-interactive output', file: TEXT.readme, slice: { heading: 'Non-interactive output', keepHeading: true, promote: true }, lede: '`--json` and `--csv` imply `--once`' },
@@ -168,7 +168,7 @@ const DOCS: Doc[] = [
   // paragraph sets a word in italics, which the description check does not
   // flatten, so it is described by the paragraph after it.
   { id: 'guide-read', title: 'Reading ai-usage-tui from an agent', file: TEXT.guideRead, lede: 'You are reading this because someone asked you about their AI token usage' },
-  { id: 'guide-setup', title: 'Setting ai-usage-tui up from an agent', file: TEXT.guideSetup, lede: 'The tool never edits another program' },
+  { id: 'guide-setup', title: 'Setting ai-usage-tui up from an agent', file: TEXT.guideSetup, lede: 'The tool edits another program' },
   { id: 'guide-recipes', title: 'Building on ai-usage-tui from an agent', file: TEXT.guideRecipes, lede: 'You are reading this because someone asked you to build something' },
   { id: 'guide-extend', title: 'Extending ai-usage-tui from an agent', file: TEXT.guideExtend, lede: 'You are reading this because someone wants the tool to cover' },
 ];

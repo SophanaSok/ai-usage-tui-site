@@ -275,9 +275,21 @@ test('the hero shows only what it has registered', () => {
   }
 });
 
+/**
+ * A page's prose, with its code spans taken out. What a code span holds is the
+ * source document's own words — the changelog's account of the dashboard
+ * redesign quotes the very tiles the hero draws — and the site cannot put
+ * anything in one that a trusted file does not say, because hand-typed
+ * commands go through `quote()`. What the rule below forbids is the site
+ * stating one of the pictures' figures as prose of its own.
+ */
+function prose(html) {
+  return html.replace(/<code[^>]*>[\s\S]*?<\/code>/g, '');
+}
+
 test('the hero’s invented numbers appear nowhere else', () => {
   const { home, hero } = heroHtml();
-  const rest = home.replace(hero, '');
+  const rest = prose(home.replace(hero, ''));
   const pages = builtPages().filter((p) => p.rel !== 'index.html');
   // The figures that could only have come from the pictures: a dollar amount,
   // a decimal, a token count with its unit. A bare percentage or count is too
@@ -287,7 +299,7 @@ test('the hero’s invented numbers appear nowhere else', () => {
     const needle = `>${text}<`;
     assert.ok(!rest.includes(needle), `${JSON.stringify(text)} is invented for the hero but appears elsewhere on the home page`);
     for (const { rel, html } of pages) {
-      assert.ok(!html.includes(needle), `${JSON.stringify(text)} is invented for the hero but appears on ${rel}`);
+      assert.ok(!prose(html).includes(needle), `${JSON.stringify(text)} is invented for the hero but appears on ${rel}`);
     }
   }
 });
