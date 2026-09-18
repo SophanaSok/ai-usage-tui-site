@@ -36,9 +36,11 @@ build time, from the app repository.
   screenshots. Every string it shows is registered in `src/lib/demo.ts` with
   where it came from: `readme` and the two scripts are checked verbatim at
   build; `invented` strings — numerals and panel titles that exist only in
-  the rendered pictures — may appear nowhere else on the site, and the
-  caption under the figure is the README's own caveat about its images.
-  `npm run check` holds the built hero to that registry.
+  the rendered pictures — may appear nowhere else on the site as its own
+  prose, though a trusted document may quote one in a code span, as the
+  changelog's account of the dashboard's redesign does. The caption under the
+  figure is the README's own caveat about its images. `npm run check` holds
+  the built hero to that registry.
 - A page's **meta description** is a paragraph of the document that page
   renders, picked by an anchor declared in `DOCS` and checked through
   `quote()`. The README wraps at eighty columns, so an anchor must sit inside

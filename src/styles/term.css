@@ -80,17 +80,50 @@
   margin-inline-start: auto;
 }
 
+/* ---- Tab row ------------------------------------------------------------- */
+
+.term-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 0.6em;
+  color: var(--tui-muted);
+}
+
+.term-tabs .tab {
+  padding-inline: 0.5em;
+}
+
+.term-tabs label {
+  cursor: pointer;
+  transition: color var(--fast) var(--ease);
+}
+
+.term-tabs label:hover {
+  color: var(--tui-fg);
+}
+
+/* The pane on show names itself in the tab row, the way ratatui reverses the
+ * selected tab: filled in the accent, with the terminal's own ink. */
+#k-models:checked ~ .term-tabs .tab-models,
+#k-routing:checked ~ .term-tabs .tab-routing,
+#k-limits:checked ~ .term-tabs .tab-limits,
+#k-burn:checked ~ .term-tabs .tab-burn {
+  background: var(--tui-cyan);
+  color: var(--tui-black);
+  font-weight: 700;
+}
+
 .term-warn {
   display: flex;
   flex-wrap: wrap;
   gap: 0 0.5em;
   margin: 0;
-  color: var(--tui-yellow);
+  color: var(--tui-red);
 }
 
 .term-warn-chip {
   padding: 0 0.5em;
-  background: var(--tui-yellow);
+  background: var(--tui-red);
   color: var(--tui-black);
   font-weight: 700;
 }
@@ -117,6 +150,17 @@
   background: var(--tui-panel);
   color: var(--c);
   font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pane-count {
+  position: absolute;
+  top: -0.75em;
+  right: 0.7em;
+  padding-inline: 0.4em;
+  background: var(--tui-panel);
+  color: var(--tui-muted);
   line-height: 1.5;
   white-space: nowrap;
 }
@@ -178,12 +222,58 @@
   white-space: nowrap;
 }
 
+.term-share {
+  display: flex;
+  gap: 2px;
+  margin-block-start: 0.3em;
+}
+
+.share {
+  flex: var(--pct);
+  min-width: 0;
+  padding-inline: 0.5em;
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--c);
+  color: var(--tui-black);
+  font-weight: 700;
+}
+
+.share-local {
+  --c: var(--tui-green);
+}
+
+.share-free {
+  --c: var(--tui-blue);
+}
+
+.share-paid {
+  --c: var(--tui-yellow);
+}
+
+.share-cloud {
+  --c: var(--tui-magenta);
+}
+
 .term-body {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
   gap: 0.6em;
   margin-block-start: 0.3em;
   min-height: 20em;
+}
+
+.term-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  min-width: 0;
+}
+
+.pane-spark {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .pane-right {
@@ -204,6 +294,11 @@
   display: block;
 }
 
+/* The small gauges yield to the full limits panel, as the dashboard's do. */
+#k-limits:checked ~ .term-body .pane-mini-limits {
+  display: none;
+}
+
 /* ---- Token flow ----------------------------------------------------------- */
 
 .flow,
@@ -220,8 +315,16 @@
   gap: 1em;
 }
 
+/* Wide enough for the longest scope, in characters, so the two lists line up
+ * on one column the way the terminal's do. */
 .burn div {
-  grid-template-columns: 14em minmax(0, 1fr);
+  grid-template-columns: 27ch minmax(0, 1fr);
+}
+
+.burn dt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .flow dt,
@@ -258,6 +361,54 @@
 
 .burn-budgets dd span {
   color: var(--tui-yellow);
+}
+
+/* ---- Gauges and sparkline ------------------------------------------------ */
+
+.mini {
+  display: grid;
+  gap: 0.05em;
+  margin: 0;
+}
+
+.mini div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6em;
+}
+
+.mini dt {
+  color: var(--tui-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini dd {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.mini dd b {
+  font-weight: 400;
+  margin-inline-start: 0.6em;
+}
+
+/* One column per day, right aligned, scaled against the range's peak. */
+.spark {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 1px;
+  min-height: 5em;
+  margin-block-start: 0.4em;
+}
+
+.spark i {
+  width: 1.6ch;
+  height: calc(var(--h) * 1%);
+  background: var(--tui-cyan);
 }
 
 /* ---- Tables --------------------------------------------------------------- */
@@ -349,6 +500,7 @@
   color: var(--tui-magenta);
 }
 
+.c-red,
 .c-unknown {
   color: var(--tui-red);
 }
@@ -388,7 +540,7 @@
   width: 7ch;
   height: 1.1em;
   vertical-align: text-bottom;
-  background: linear-gradient(to right, var(--tui-fg) calc(var(--pct) * 1%), var(--tui-selected) 0);
+  background: linear-gradient(to right, var(--tui-cyan) calc(var(--pct) * 1%), var(--tui-selected) 0);
 }
 
 .pane-foot {
@@ -429,9 +581,13 @@
 /* ---- Boot ------------------------------------------------------------------ */
 
 .term-head,
+.term-tabs,
 .term-warn,
 .tile,
+.term-share,
 .pane-flow,
+.pane-mini-limits,
+.pane-spark,
 .pane-models,
 .term-foot {
   animation: term-boot 380ms var(--ease) both;
@@ -502,5 +658,12 @@
 
   .term-head .term-status {
     display: none;
+  }
+
+  /* The scopes give up their fixed column and truncate, rather than wrapping
+   * a figure over three lines. */
+  .burn div {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.6em;
   }
 }
