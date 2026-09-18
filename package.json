@@ -15,7 +15,7 @@
     "verify": "npm run build && npm run check"
   },
   "devDependencies": {
-    "astro": "^7.2.10",
+    "astro": "^7.3.2",
     "sharp": "^0.35.4"
   }
 }
